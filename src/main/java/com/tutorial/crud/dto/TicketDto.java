@@ -1,0 +1,180 @@
+package com.tutorial.crud.dto;
+
+import java.time.LocalDateTime;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import com.tutorial.crud.entity.DetalleGeneral;
+import com.tutorial.crud.entity.MetodoPago;
+import com.tutorial.crud.security.entity.Usuario;
+
+public class TicketDto {
+
+    private int id;
+
+    private LocalDateTime fechaImpresion;
+    
+    private double montoTotal; 
+
+    private LocalDateTime fechaPago;
+
+    private double montoPagado; 
+
+    private double cambio; 
+    
+    @Size(max = 50)
+    private String nombreEmpleado;
+
+    private int idMetodoPago;
+
+    @NotNull(message = "El id del detalle general debe ser ingresado y no puede ser nulo")
+    private int idDetalleGeneral;
+    
+    @NotNull(message = "El id del usuario debe ser ingresado y no puede ser nulo")
+    private int idUsuario;
+   
+    private MetodoPago metodoPago;
+    
+    private DetalleGeneral detalleGeneral;
+    
+    private Usuario usuario;
+
+    public TicketDto() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getFechaImpresion() {
+        return fechaImpresion;
+    }
+
+    public void setFechaImpresion(LocalDateTime fechaImpresion) {
+        this.fechaImpresion = fechaImpresion;
+    }
+
+    public double getMontoTotal() {
+        return montoTotal;
+    }
+
+    public void setMontoTotal(double montoTotal) {
+        this.montoTotal = montoTotal;
+    }
+
+    public LocalDateTime getFechaPago() {
+        return fechaPago;
+    }
+
+    public void setFechaPago(LocalDateTime fechaPago) {
+        this.fechaPago = fechaPago;
+    }
+
+    public double getMontoPagado() {
+        return montoPagado;
+    }
+
+    public void setMontoPagado(double montoPagado) {
+        this.montoPagado = montoPagado;
+    }
+
+    public double getCambio() {
+        return cambio;
+    }
+
+    public void setCambio(double cambio) {
+        this.cambio = cambio;
+    }
+
+    public String getNombreEmpleado() {
+        return nombreEmpleado;
+    }
+
+    public void setNombreEmpleado(String nombreEmpleado) {
+        this.nombreEmpleado = nombreEmpleado;
+    }
+
+    public int getIdMetodoPago() {
+        return idMetodoPago;
+    }
+
+    public void setIdMetodoPago(int idMetodoPago) {
+        this.idMetodoPago = idMetodoPago;
+    }
+
+    public int getIdDetalleGeneral() {
+        return idDetalleGeneral;
+    }
+
+    public void setIdDetalleGeneral(int idDetalleGeneral) {
+        this.idDetalleGeneral = idDetalleGeneral;
+    }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public MetodoPago getMetodoPago() {
+        return metodoPago;
+    }
+
+    public void setMetodoPago(MetodoPago metodoPago) {
+        this.metodoPago = metodoPago;
+    }
+
+    public DetalleGeneral getDetalleGeneral() {
+        return detalleGeneral;
+    }
+
+    public void setDetalleGeneral(DetalleGeneral detalleGeneral) {
+        this.detalleGeneral = detalleGeneral;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
+    
+    public TicketDto(int id, LocalDateTime fechaImpresion, double montoTotal, LocalDateTime fechaPago, double montoPagado, double cambio, String nombreEmpleado, int idMetodoPago, int idDetalleGeneral, int idUsuario, MetodoPago metodoPago, DetalleGeneral detalleGeneral, Usuario usuario) {
+        this.id = id;
+        this.fechaImpresion = fechaImpresion;
+        this.montoTotal = montoTotal;
+        this.fechaPago = fechaPago;
+        this.montoPagado = montoPagado;
+        this.cambio = cambio;
+        this.nombreEmpleado = nombreEmpleado;
+        
+        if (metodoPago != null) {
+            this.metodoPago = metodoPago;
+            this.idMetodoPago = metodoPago.getId();
+        }
+        
+        if (detalleGeneral != null) {
+            this.detalleGeneral = detalleGeneral;
+            this.idDetalleGeneral = detalleGeneral.getId();
+        }
+        
+        if (usuario != null) {
+            this.usuario = usuario;
+            this.idUsuario = usuario.getId();
+        }
+    }
+    
+
+
+
+
+}
