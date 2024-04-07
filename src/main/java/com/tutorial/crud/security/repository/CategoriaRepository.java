@@ -11,6 +11,7 @@ import com.tutorial.crud.entity.Categoria;
 public interface CategoriaRepository extends JpaRepository<Categoria, Integer> {
 
     Optional<Categoria> findByNombre(String nombre);
+    
 
     boolean existsByNombre(String nombre);
 }

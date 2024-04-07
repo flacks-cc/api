@@ -1,5 +1,6 @@
 package com.tutorial.crud.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -54,5 +55,27 @@ public class ReservacionService {
             horaInicio, horaFin, horaInicio, horaFin);
         return !reservaciones.isEmpty();
     }
+    
+ // Método para verificar si existe alguna reservación en el intervalo de tiempo deseado para el día especificado
+    public boolean existeReservaEnIntervaloParaDia(LocalTime horaInicio, LocalTime horaFin, LocalDate fechaReserva) {
+        List<Reservacion> reservaciones = reservacionRepository.findByHoraInicioBetweenAndFechaReservaOrHoraFinBetweenAndFechaReserva(
+            horaInicio, horaFin, fechaReserva, horaInicio, horaFin, fechaReserva);
+        return !reservaciones.isEmpty();
+    }
+    
+ // Método en el servicio de reservaciones para verificar si existe alguna reservación en la misma hora pero en otro día
+    public boolean existeReservaEnMismaHoraOtroDia(LocalTime horaInicio, LocalTime horaFin, LocalDate fechaReserva) {
+        // Verificar si existe alguna reservación en la misma hora pero en otro día
+        return reservacionRepository.existsByHoraInicioAndFechaReserva(horaInicio, fechaReserva.minusDays(1))
+                || reservacionRepository.existsByHoraFinAndFechaReserva(horaFin, fechaReserva.plusDays(1));
+    }
+    
+    public boolean existeReservaEnIntervaloParaHora(LocalTime horaInicio, LocalTime horaFin) {
+        // Verificar si existe alguna reservación en el intervalo de tiempo deseado para la hora especificada
+        return reservacionRepository.existsByHoraInicioBeforeAndHoraFinAfter(horaFin, horaInicio);
+    }
+
+
+
 
 }

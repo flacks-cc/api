@@ -27,6 +27,10 @@ public class MetodoPagoService {
     public Optional<MetodoPago> getByMetodoNombre(String nombre){
         return metodoPagoRepository.findByMetodoNombre(nombre);
     }
+    
+    public List<MetodoPago> findAll() {
+        return metodoPagoRepository.findAll();
+    }
 
     public void save(MetodoPago metodoPago){
         metodoPagoRepository.save(metodoPago);

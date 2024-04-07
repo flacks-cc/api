@@ -1,8 +1,11 @@
 package com.tutorial.crud.controller;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -30,13 +33,14 @@ import com.tutorial.crud.dto.ReservacionDto;
 import com.tutorial.crud.entity.Reservacion;
 import com.tutorial.crud.entity.Servicio;
 import com.tutorial.crud.security.entity.Usuario;
+import com.tutorial.crud.security.repository.ReservacionRepository;
 import com.tutorial.crud.security.service.UsuarioService;
 import com.tutorial.crud.service.ReservacionService;
 import com.tutorial.crud.service.ServicioService;
 
 @RestController
 @Controller
-@RequestMapping("/api/reservaciones")
+@RequestMapping("/reservaciones")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ReservacionController {
 
@@ -45,6 +49,7 @@ public class ReservacionController {
     
     @Autowired
     private UsuarioService usuarioService;
+    
     
     @Autowired
     private ServicioService servicioService;
@@ -76,43 +81,9 @@ public class ReservacionController {
         reservacionService.delete(id);
         return new ResponseEntity<>(new Mensaje("Reservación eliminada"), HttpStatus.OK);
     }
-    
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/crearusuario")
-    public ResponseEntity<?> crearReservacion(@RequestBody ReservacionDto reservacionDto) {
-        // Obtener el nombre de usuario del token
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String nombreUsuario = authentication.getName();
 
-        // Obtener el usuario a partir del nombre de usuario
-        Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
-
-        // Obtener el servicio a partir del ID proporcionado
-        Servicio servicio = servicioService.findById(reservacionDto.getIdServicio())
-                .orElseThrow(() -> new IllegalArgumentException("El servicio especificado no existe"));
-
-        // Calcular la hora de fin de la reservación
-        LocalTime horaInicio = reservacionDto.getHoraInicio();
-        int duracionEnMinutos = servicio.getDuracion(); // Obtener la duración del servicio en minutos
-        Duration duracion = Duration.ofMinutes(duracionEnMinutos); // Convertir la duración a Duration
-        LocalTime horaFin = horaInicio.plus(duracion);
-
-        // Verificar si existe alguna reservación en el intervalo de tiempo deseado
-        if (reservacionService.existeReservaEnIntervalo(horaInicio, horaFin)) {
-            return ResponseEntity.badRequest().body(new Mensaje("Ya existe una reservación en este horario"));
-        }
-
-        // Crear la reservación
-        Reservacion reservacion = new Reservacion(reservacionDto.getFechaReserva(), horaInicio, horaFin, servicio, usuario);
-
-        // Guardar la reservación en la base de datos
-        reservacionService.save(reservacion);
-
-        // Devolver una respuesta exitosa
-        return ResponseEntity.ok(new Mensaje("Reservación creada exitosamente"));
-    }
    
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/crearadmin")
     public ResponseEntity<?> create(@RequestBody @Valid ReservacionDto reservacionDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -138,8 +109,14 @@ public class ReservacionController {
         int duracionEnMinutos = servicioOptional.get().getDuracion(); // Obtener la duración del servicio en minutos
         LocalTime horaFin = horaInicio.plusMinutes(duracionEnMinutos);
 
-        // Verificar si existe alguna reservación en el intervalo de tiempo deseado
-        if (reservacionService.existeReservaEnIntervalo(horaInicio, horaFin)) {
+        // Verificar si existe alguna reservación en el intervalo de tiempo deseado para el día especificado
+        boolean reservaEnIntervaloParaDia = reservacionService.existeReservaEnIntervaloParaDia(horaInicio, horaFin, reservacionDto.getFechaReserva());
+
+        // Verificar si existe alguna reservación en la misma hora pero en otro día
+        boolean reservaEnMismaHoraOtroDia = reservacionService.existeReservaEnMismaHoraOtroDia(horaInicio, horaFin, reservacionDto.getFechaReserva());
+
+        // Combinar ambas validaciones
+        if (reservaEnIntervaloParaDia || reservaEnMismaHoraOtroDia) {
             return ResponseEntity.badRequest().body(new Mensaje("Ya existe una reservación en este horario"));
         }
 
@@ -151,12 +128,25 @@ public class ReservacionController {
                 servicioOptional.get(),
                 usuarioOptional.get()
         );
-        
+
         // Guardar la reservación en la base de datos
         reservacionService.save(reservacion);
-        return ResponseEntity.ok(new Mensaje("Reservación creada exitosamente"));
+        
+        // Crear un objeto que contenga los nombres correspondientes a cada ID
+     // Crear un objeto que contenga los nombres correspondientes a cada ID
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("idReservacion", reservacion.getId());
+        respuesta.put("fechaReserva", reservacion.getFechaReserva());
+        respuesta.put("horaInicio", reservacion.getHoraInicio());
+        respuesta.put("horaFin", reservacion.getHoraFin());
+        respuesta.put("nombreServicio", reservacion.getServicio().getNombre());
+        respuesta.put("nombreUsuario", reservacion.getUsuario().getNombre());
+
+        // Devolver la respuesta con los nombres correspondientes a cada ID
+        return ResponseEntity.ok(respuesta);
     }
-    
+
+
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/actualizar/{id}")
     public ResponseEntity<?> updateReservacion(@PathVariable("id") int id, @RequestBody @Valid ReservacionDto reservacionDto, BindingResult bindingResult) {
@@ -204,5 +194,40 @@ public class ReservacionController {
         // Guardar la reservación actualizada en la base de datos
         reservacionService.save(reservacion);
         return ResponseEntity.ok(new Mensaje("Reservación actualizada exitosamente"));
+    }
+    
+    @PostMapping("/crearusuario")
+    public ResponseEntity<?> crearReservacion(@RequestBody ReservacionDto reservacionDto) {
+        // Obtener el nombre de usuario del token
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String nombreUsuario = authentication.getName();
+
+        // Obtener el usuario a partir del nombre de usuario
+        Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
+                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
+
+        // Obtener el servicio a partir del ID proporcionado
+        Servicio servicio = servicioService.findById(reservacionDto.getIdServicio())
+                .orElseThrow(() -> new IllegalArgumentException("El servicio especificado no existe"));
+
+        // Calcular la hora de fin de la reservación
+        LocalTime horaInicio = reservacionDto.getHoraInicio();
+        int duracionEnMinutos = servicio.getDuracion(); // Obtener la duración del servicio en minutos
+        Duration duracion = Duration.ofMinutes(duracionEnMinutos); // Convertir la duración a Duration
+        LocalTime horaFin = horaInicio.plus(duracion);
+
+        // Verificar si existe alguna reservación en el intervalo de tiempo deseado
+        if (reservacionService.existeReservaEnIntervalo(horaInicio, horaFin)) {
+            return ResponseEntity.badRequest().body(new Mensaje("Ya existe una reservación en este horario"));
+        }
+
+        // Crear la reservación
+        Reservacion reservacion = new Reservacion(reservacionDto.getFechaReserva(), horaInicio, horaFin, servicio, usuario);
+
+        // Guardar la reservación en la base de datos
+        reservacionService.save(reservacion);
+
+        // Devolver una respuesta exitosa
+        return ResponseEntity.ok(new Mensaje("Reservación creada exitosamente"));
     }
 }

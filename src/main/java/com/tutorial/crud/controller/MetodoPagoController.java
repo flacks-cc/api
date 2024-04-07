@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tutorial.crud.dto.Mensaje;
 import com.tutorial.crud.dto.MetodoPagoDto;
 import com.tutorial.crud.entity.MetodoPago;
+import com.tutorial.crud.security.entity.Usuario;
 import com.tutorial.crud.service.MetodoPagoService;
 
 @RestController
@@ -37,13 +38,8 @@ public class MetodoPagoController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/lista")
-    public ResponseEntity<List<MetodoPagoDto>> list(){
-        List<MetodoPago> metodosPago = metodoPagoService.list();
-        List<MetodoPagoDto> metodosPagoDto = metodosPago.stream().map(metodoPago -> {
-            MetodoPagoDto metodoPagoDto = new MetodoPagoDto();
-            BeanUtils.copyProperties(metodoPago, metodoPagoDto);
-            return metodoPagoDto;
-        }).collect(Collectors.toList());
+    public ResponseEntity<List<MetodoPago>> listarMetodos() {
+        List<MetodoPago> metodosPagoDto = metodoPagoService.findAll();
         return new ResponseEntity<>(metodosPagoDto, HttpStatus.OK);
     }
 

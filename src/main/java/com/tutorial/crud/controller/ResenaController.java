@@ -1,7 +1,9 @@
 package com.tutorial.crud.controller;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -105,10 +107,21 @@ public class ResenaController {
         // Guardar la reseña en la base de datos
         resenaService.save(resena);
         
-        // Devolver una respuesta exitosa
-        return ResponseEntity.ok(new Mensaje("Reseña creada correctamente"));
+        // Crear un objeto que contenga los nombres correspondientes a cada ID
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("mensaje", resenaDto.getMensaje());
+        respuesta.put("valoracion", resenaDto.getValoracion());
+        respuesta.put("fechaResena", fechaHoraActual);
+        respuesta.put("usuario", usuario);
+        respuesta.put("servicio", servicio);
+        respuesta.put("producto", producto);
+
+        // Devolver la respuesta con los nombres correspondientes a cada ID
+        return ResponseEntity.ok(respuesta);
     }
 
+
+    
     
     @PostMapping("/crearusuario")
     public ResponseEntity<?> crearUsuario(@RequestBody ResenaDto resenaDto) {

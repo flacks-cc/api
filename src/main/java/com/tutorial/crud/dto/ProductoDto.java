@@ -1,8 +1,13 @@
 package com.tutorial.crud.dto;
 
+import java.util.Optional;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import com.tutorial.crud.entity.Categoria;
+import com.tutorial.crud.service.CategoriaService;
 
 public class ProductoDto {
 
@@ -23,12 +28,12 @@ public class ProductoDto {
     private Float precio;
 
     @NotNull(message = "El ID de la categoría debe ser ingresado y no puede ser nulo")
-    private int idCategoria;
+    private Integer  idCategoria;
 
     public ProductoDto() {
     }
 
-    public ProductoDto(String nombre, String descripcion, Integer cantidadTotal, Float precio, int idCategoria) {
+    public ProductoDto(String nombre, String descripcion, Integer cantidadTotal, Float precio, Integer  idCategoria) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.cantidadTotal = cantidadTotal;
@@ -68,11 +73,12 @@ public class ProductoDto {
         this.precio = precio;
     }
 
-    public int getIdCategoria() {
+    public Integer  getIdCategoria() {
         return idCategoria;
     }
 
-    public void setIdCategoria(int idCategoria) {
+    public void setIdCategoria(Integer  idCategoria) {
         this.idCategoria = idCategoria;
     }
+    
 }

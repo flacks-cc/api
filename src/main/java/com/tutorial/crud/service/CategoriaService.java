@@ -33,6 +33,10 @@ public class CategoriaService {
         categoriaRepository.save(categoria);
     }
 
+    public Optional<Categoria> findByNombre(String nombre) {
+        return categoriaRepository.findByNombre(nombre);
+    }
+    
     public void delete(int id){
         categoriaRepository.deleteById(id);
     }
