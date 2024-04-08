@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -48,6 +50,40 @@ public class ContactoController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
+
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/crearadmin")
+    public ResponseEntity<Map<String, Object>> crearContactoAdmin(@RequestBody ContactoDto contactoDto) {
+        // Generar la fecha y hora actuales
+        LocalDateTime fechaMensaje = LocalDateTime.now();
+
+        Contacto nuevoContacto = new Contacto(
+                contactoDto.getAsunto(),
+                contactoDto.getMensaje(),
+                contactoDto.getAdjunto(),
+                fechaMensaje, // Utilizar la fecha y hora generadas automáticamente
+                usuarioService.findById(contactoDto.getIdUsuario())
+                        .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"))
+        );
+        // Guardar el nuevo contacto en la base de datos
+        contactoService.save(nuevoContacto);
+
+        // Obtener el nombre del usuario
+        String nombreUsuario = nuevoContacto.getUsuario().getNombre();
+
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("asunto", nuevoContacto.getAsunto());
+        respuesta.put("mensaje", nuevoContacto.getMensaje());
+        respuesta.put("fechaMensaje", nuevoContacto.getFechaMensaje()); // Agregar la fecha del mensaje
+        respuesta.put("usuario", nombreUsuario); // Agregar el nombre del usuario
+
+        // Devolver la respuesta HTTP con un código de estado 201 CREATED
+        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+    }
+
+
+
     @PostMapping("/creausuario")
     public ResponseEntity<?> creaUsuario(@Valid @RequestBody ContactoDto contactoDto) {
         // Obtener la fecha y hora actuales
@@ -69,28 +105,6 @@ public class ContactoController {
         // Devolver un mensaje de confirmación
         return new ResponseEntity<>(new Mensaje("Mensaje de contacto guardado exitosamente"), HttpStatus.OK);
     }
-
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/crearadmin")
-    public ResponseEntity<Contacto> crearContactoAdmin(@RequestBody ContactoDto contactoDto) {
-        // Generar la fecha y hora actuales
-        LocalDateTime fechaMensaje = LocalDateTime.now();
-        // Crear un nuevo objeto Contacto usando los datos proporcionados en el DTO
-        Contacto nuevoContacto = new Contacto(
-                contactoDto.getAsunto(),
-                contactoDto.getMensaje(),
-                contactoDto.getAdjunto(),
-                fechaMensaje, // Utilizar la fecha y hora generadas automáticamente
-                usuarioService.findById(contactoDto.getIdUsuario())
-                        .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"))
-        );
-        // Guardar el nuevo contacto en la base de datos
-        contactoService.save(nuevoContacto);
-        // Devolver el nuevo contacto creado en la respuesta HTTP con un código de estado 201 CREATED
-        return new ResponseEntity<>(nuevoContacto, HttpStatus.CREATED);
-    }
-
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/actualizar/{id}")
