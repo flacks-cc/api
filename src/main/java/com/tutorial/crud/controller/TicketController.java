@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tutorial.crud.dto.Mensaje;
 import com.tutorial.crud.dto.TicketDto;
 import com.tutorial.crud.entity.DetalleProducto;
-import com.tutorial.crud.entity.MetodoPago;
+import com.tutorial.crud.entity.Metodo_Pago;
 import com.tutorial.crud.entity.Ticket;
 import com.tutorial.crud.security.entity.Usuario;
 import com.tutorial.crud.security.service.UsuarioService;
@@ -184,7 +184,7 @@ public class TicketController {
                 .orElseThrow(() -> new IllegalArgumentException("El detalle producto especificado no existe"));
         
         // Obtener el método de pago a partir del ID proporcionado
-        MetodoPago metodoPago = metodoPagoService.findById(ticketDto.getIdMetodoPago())
+        Metodo_Pago metodoPago = metodoPagoService.findById(ticketDto.getIdMetodoPago())
                 .orElseThrow(() -> new IllegalArgumentException("El método de pago especificado no existe"));
         
         // Obtener el usuario a partir del ID proporcionado
@@ -234,7 +234,7 @@ public class TicketController {
                 .orElseThrow(() -> new IllegalArgumentException("El detalle producto especificado no existe"));
         
         // Obtener el método de pago a partir del ID proporcionado en el DTO
-        MetodoPago metodoPago = metodoPagoService.findById(ticketDto.getIdMetodoPago())
+        Metodo_Pago metodoPago = metodoPagoService.findById(ticketDto.getIdMetodoPago())
                 .orElseThrow(() -> new IllegalArgumentException("El método de pago especificado no existe"));
         
         // Obtener el usuario a partir del ID proporcionado en el DTO

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tutorial.crud.entity.MetodoPago;
+import com.tutorial.crud.entity.Metodo_Pago;
 import com.tutorial.crud.security.repository.MetodoPagoRepository;
 
 @Service
@@ -16,23 +16,23 @@ public class MetodoPagoService {
     @Autowired
     private MetodoPagoRepository metodoPagoRepository;
 
-    public List<MetodoPago> list(){
+    public List<Metodo_Pago> list(){
         return metodoPagoRepository.findAll();
     }
 
-    public Optional<MetodoPago> getOne(int id){
+    public Optional<Metodo_Pago> getOne(int id){
         return metodoPagoRepository.findById(id);
     }
 
-    public Optional<MetodoPago> getByMetodoNombre(String nombre){
+    public Optional<Metodo_Pago> getByMetodoNombre(String nombre){
         return metodoPagoRepository.findByMetodoNombre(nombre);
     }
     
-    public List<MetodoPago> findAll() {
+    public List<Metodo_Pago> findAll() {
         return metodoPagoRepository.findAll();
     }
 
-    public void save(MetodoPago metodoPago){
+    public void save(Metodo_Pago metodoPago){
         metodoPagoRepository.save(metodoPago);
     }
 
@@ -44,7 +44,7 @@ public class MetodoPagoService {
         return metodoPagoRepository.existsById(id);
     }
     
-    public Optional<MetodoPago> findById(int id) {
+    public Optional<Metodo_Pago> findById(int id) {
         return metodoPagoRepository.findById(id);
     }
 

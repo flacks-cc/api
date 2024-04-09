@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-public class MetodoPago {
+public class Metodo_Pago {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

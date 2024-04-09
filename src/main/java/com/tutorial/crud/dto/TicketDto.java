@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import com.tutorial.crud.entity.DetalleProducto;
-import com.tutorial.crud.entity.MetodoPago;
+import com.tutorial.crud.entity.Metodo_Pago;
 import com.tutorial.crud.security.entity.Usuario;
 
 public class TicketDto {
@@ -32,7 +32,7 @@ public class TicketDto {
     @NotNull(message = "El id del usuario debe ser ingresado y no puede ser nulo")
     private int idUsuario;
    
-    private MetodoPago metodoPago;
+    private Metodo_Pago metodoPago;
     
     private DetalleProducto detalleProducto;
     
@@ -121,11 +121,11 @@ public class TicketDto {
         this.idUsuario = idUsuario;
     }
 
-    public MetodoPago getMetodoPago() {
+    public Metodo_Pago getMetodoPago() {
         return metodoPago;
     }
 
-    public void setMetodoPago(MetodoPago metodoPago) {
+    public void setMetodoPago(Metodo_Pago metodoPago) {
         this.metodoPago = metodoPago;
     }
 
@@ -146,7 +146,7 @@ public class TicketDto {
     }
     
     
-    public TicketDto(int id, LocalDateTime fechaImpresion, double montoTotal, LocalDateTime fechaPago, double montoPagado, double cambio, String nombreEmpleado, int idMetodoPago, int idDetalleProducto, int idUsuario, MetodoPago metodoPago, DetalleProducto detalleProducto, Usuario usuario) {
+    public TicketDto(int id, LocalDateTime fechaImpresion, double montoTotal, LocalDateTime fechaPago, double montoPagado, double cambio, String nombreEmpleado, int idMetodoPago, int idDetalleProducto, int idUsuario, Metodo_Pago metodoPago, DetalleProducto detalleProducto, Usuario usuario) {
         this.id = id;
         this.fechaImpresion = fechaImpresion;
         this.montoTotal = montoTotal;

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tutorial.crud.dto.Mensaje;
 import com.tutorial.crud.dto.MetodoPagoDto;
-import com.tutorial.crud.entity.MetodoPago;
+import com.tutorial.crud.entity.Metodo_Pago;
 import com.tutorial.crud.security.entity.Usuario;
 import com.tutorial.crud.service.MetodoPagoService;
 
@@ -38,8 +38,8 @@ public class MetodoPagoController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/lista")
-    public ResponseEntity<List<MetodoPago>> listarMetodos() {
-        List<MetodoPago> metodosPagoDto = metodoPagoService.findAll();
+    public ResponseEntity<List<Metodo_Pago>> listarMetodos() {
+        List<Metodo_Pago> metodosPagoDto = metodoPagoService.findAll();
         return new ResponseEntity<>(metodosPagoDto, HttpStatus.OK);
     }
 
@@ -48,7 +48,7 @@ public class MetodoPagoController {
     public ResponseEntity<?> getById(@PathVariable("id") int id){
         if(!metodoPagoService.existsById(id))
             return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
-        MetodoPago metodoPago = metodoPagoService.getOne(id).get();
+        Metodo_Pago metodoPago = metodoPagoService.getOne(id).get();
         MetodoPagoDto metodoPagoDto = new MetodoPagoDto();
         BeanUtils.copyProperties(metodoPago, metodoPagoDto);
         return new ResponseEntity<>(metodoPagoDto, HttpStatus.OK);
@@ -68,7 +68,7 @@ public class MetodoPagoController {
         if(metodoPagoService.existsByMetodoNombre(metodoPagoDto.getMetodoNombre()))
             return new ResponseEntity<>(new Mensaje("El método de pago ya existe"), HttpStatus.BAD_REQUEST);
 
-        MetodoPago metodoPago = new MetodoPago();
+        Metodo_Pago metodoPago = new Metodo_Pago();
         metodoPago.setMetodoNombre(metodoPagoDto.getMetodoNombre());
         metodoPagoService.save(metodoPago);
         return new ResponseEntity<>(new Mensaje("Método de pago creado exitosamente"), HttpStatus.OK);
@@ -90,7 +90,7 @@ public class MetodoPagoController {
         if(metodoPagoService.existsByMetodoNombre(metodoPagoDto.getMetodoNombre()) && metodoPagoService.getByMetodoNombre(metodoPagoDto.getMetodoNombre()).get().getId() != id)
             return new ResponseEntity<>(new Mensaje("Ese método de pago ya existe"), HttpStatus.BAD_REQUEST);
 
-        MetodoPago metodoPago = metodoPagoService.findById(id).orElse(null);
+        Metodo_Pago metodoPago = metodoPagoService.findById(id).orElse(null);
         if (metodoPago == null)
             return new ResponseEntity<>(new Mensaje("No se encontró el método de pago"), HttpStatus.NOT_FOUND);
         
