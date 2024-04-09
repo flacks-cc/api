@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import com.tutorial.crud.security.entity.Usuario;
 
 @Entity
-public class DetalleGeneral {
+public class DetalleProducto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -35,7 +35,7 @@ public class DetalleGeneral {
     //Campo para almacenar el total de la cantidad de productos adquiridos * el precio del producto
     private double total; 
 
-    public DetalleGeneral() {
+    public DetalleProducto() {
     }
 
     public int getId() {
@@ -86,7 +86,7 @@ public class DetalleGeneral {
         this.usuario = usuario;
     }
 
-    public DetalleGeneral(Reservacion reservacion, Producto producto, Usuario usuario, int cantidad, double total) {
+    public DetalleProducto(Reservacion reservacion, Producto producto, Usuario usuario, int cantidad, double total) {
         this.reservacion = reservacion;
         this.usuario = usuario; 
         this.producto = producto;

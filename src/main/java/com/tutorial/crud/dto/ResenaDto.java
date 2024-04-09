@@ -16,7 +16,6 @@ public class ResenaDto {
     
     private Integer valoracion;
 
-
     private LocalDateTime fechaResena;
 
     @NotNull(message = "El id de usuario debe ser ingresado y no puede ser nulo")

@@ -27,12 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tutorial.crud.dto.Mensaje;
 import com.tutorial.crud.dto.TicketDto;
-import com.tutorial.crud.entity.DetalleGeneral;
+import com.tutorial.crud.entity.DetalleProducto;
 import com.tutorial.crud.entity.MetodoPago;
 import com.tutorial.crud.entity.Ticket;
 import com.tutorial.crud.security.entity.Usuario;
 import com.tutorial.crud.security.service.UsuarioService;
-import com.tutorial.crud.service.DetalleGeneralService;
+import com.tutorial.crud.service.DetalleProductoService;
 import com.tutorial.crud.service.MetodoPagoService;
 import com.tutorial.crud.service.ProductoService;
 import com.tutorial.crud.service.ReservacionService;
@@ -48,7 +48,7 @@ public class TicketController {
     private TicketService ticketService;
     
     @Autowired
-    DetalleGeneralService detalleGeneralService;
+    DetalleProductoService detalleProductoService;
     
     @Autowired
     ProductoService productoService;
@@ -81,49 +81,42 @@ public class TicketController {
         response.put("fechaImpresion", ticket.getFechaImpresion());
         response.put("montoTotal", ticket.getMontoTotal());
 
-        Map<String, Object> detalleGeneral = new HashMap<>();
-        detalleGeneral.put("id", ticket.getDetalleGeneral().getId());
+        Map<String, Object> detalleProducto = new HashMap<>();
+        detalleProducto.put("id", ticket.getDetalleProducto().getId());
 
         Map<String, Object> reservacion = new HashMap<>();
-        reservacion.put("id", ticket.getDetalleGeneral().getReservacion().getId());
-        reservacion.put("fechaReserva", ticket.getDetalleGeneral().getReservacion().getFechaReserva());
-        reservacion.put("horaInicio", ticket.getDetalleGeneral().getReservacion().getHoraInicio());
-        reservacion.put("horaFin", ticket.getDetalleGeneral().getReservacion().getHoraFin());
+        reservacion.put("id", ticket.getDetalleProducto().getReservacion().getId());
+        reservacion.put("fechaReserva", ticket.getDetalleProducto().getReservacion().getFechaReserva());
+        reservacion.put("horaInicio", ticket.getDetalleProducto().getReservacion().getHoraInicio());
+        reservacion.put("horaFin", ticket.getDetalleProducto().getReservacion().getHoraFin());
 
         Map<String, Object> usuario = new HashMap<>();
-        usuario.put("nombre", ticket.getDetalleGeneral().getReservacion().getUsuario().getNombre());
-        usuario.put("apellidoPaterno", ticket.getDetalleGeneral().getReservacion().getUsuario().getApellidoPaterno());
-        usuario.put("telefono", ticket.getDetalleGeneral().getReservacion().getUsuario().getTelefono());
-        usuario.put("nombreUsuario", ticket.getDetalleGeneral().getReservacion().getUsuario().getNombreUsuario());
-        usuario.put("email", ticket.getDetalleGeneral().getReservacion().getUsuario().getEmail());
+        usuario.put("nombre", ticket.getDetalleProducto().getReservacion().getUsuario().getNombre());
+        usuario.put("apellidoPaterno", ticket.getDetalleProducto().getReservacion().getUsuario().getApellidoPaterno());
+        usuario.put("telefono", ticket.getDetalleProducto().getReservacion().getUsuario().getTelefono());
+        usuario.put("nombreUsuario", ticket.getDetalleProducto().getReservacion().getUsuario().getNombreUsuario());
+        usuario.put("email", ticket.getDetalleProducto().getReservacion().getUsuario().getEmail());
 
         reservacion.put("usuario", usuario);
 
         Map<String, Object> servicio = new HashMap<>();
-        servicio.put("nombre", ticket.getDetalleGeneral().getReservacion().getServicio().getNombre());
-        servicio.put("descripcion", ticket.getDetalleGeneral().getReservacion().getServicio().getDescripcion());
-        servicio.put("precio", ticket.getDetalleGeneral().getReservacion().getServicio().getPrecio());
-        servicio.put("duracion", ticket.getDetalleGeneral().getReservacion().getServicio().getDuracion());
+        servicio.put("nombre", ticket.getDetalleProducto().getReservacion().getServicio().getNombre());
+        servicio.put("descripcion", ticket.getDetalleProducto().getReservacion().getServicio().getDescripcion());
+        servicio.put("precio", ticket.getDetalleProducto().getReservacion().getServicio().getPrecio());
+        servicio.put("duracion", ticket.getDetalleProducto().getReservacion().getServicio().getDuracion());
 
         reservacion.put("servicio", servicio);
 
-        detalleGeneral.put("reservacion", reservacion);
+        detalleProducto.put("reservacion", reservacion);
 
         Map<String, Object> producto = new HashMap<>();
-        producto.put("nombre", ticket.getDetalleGeneral().getProducto().getNombre());
-        producto.put("descripcion", ticket.getDetalleGeneral().getProducto().getDescripcion());
-        producto.put("precio", ticket.getDetalleGeneral().getProducto().getPrecio());
+        producto.put("nombre", ticket.getDetalleProducto().getProducto().getNombre());
+        producto.put("descripcion", ticket.getDetalleProducto().getProducto().getDescripcion());
+        producto.put("precio", ticket.getDetalleProducto().getProducto().getPrecio());
+        detalleProducto.put("producto", producto);
+        detalleProducto.put("cantidad", ticket.getDetalleProducto().getCantidad());
 
-        Map<String, Object> categoria = new HashMap<>();
-        categoria.put("nombre", ticket.getDetalleGeneral().getProducto().getCategoria().getNombre());
-        categoria.put("descripcion", ticket.getDetalleGeneral().getProducto().getCategoria().getDescripcion());
-
-        producto.put("categoria", categoria);
-
-        detalleGeneral.put("producto", producto);
-        detalleGeneral.put("cantidad", ticket.getDetalleGeneral().getCantidad());
-
-        response.put("detalleGeneral", detalleGeneral);
+        response.put("detalleProducto", detalleProducto);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -161,18 +154,18 @@ public class TicketController {
         Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
                 .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
         
-        // Obtener el detalle general a partir del ID proporcionado
-        DetalleGeneral detalleGeneral = detalleGeneralService.findById(ticketDto.getIdDetalleGeneral())
-                .orElseThrow(() -> new IllegalArgumentException("El detalle general especificado no existe"));
+        // Obtener el detalle producto a partir del ID proporcionado
+        DetalleProducto detalleProducto = detalleProductoService.findById(ticketDto.getIdDetalleProducto())
+                .orElseThrow(() -> new IllegalArgumentException("El detalle producto especificado no existe"));
         
-        // Asignar el total del DetalleGeneral al campo montoTotal del TicketDto
-        ticketDto.setMontoTotal(detalleGeneral.getTotal());
+        // Asignar el total del DetalleProducto al campo montoTotal del TicketDto
+        ticketDto.setMontoTotal(detalleProducto.getTotal());
         
 
         Ticket ticket = new Ticket(
                 fechaImpresion,
                 ticketDto.getMontoTotal(),
-                detalleGeneral,
+                detalleProducto,
                 usuario
         );
         
@@ -186,9 +179,9 @@ public class TicketController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/crearadmin")
     public ResponseEntity<?> crearAdmin(@RequestBody TicketDto ticketDto) {
-        // Obtener el detalle general a partir del ID proporcionado
-        DetalleGeneral detalleGeneral = detalleGeneralService.findById(ticketDto.getIdDetalleGeneral())
-                .orElseThrow(() -> new IllegalArgumentException("El detalle general especificado no existe"));
+        // Obtener el detalle producto a partir del ID proporcionado
+        DetalleProducto detalleProducto = detalleProductoService.findById(ticketDto.getIdDetalleProducto())
+                .orElseThrow(() -> new IllegalArgumentException("El detalle producto especificado no existe"));
         
         // Obtener el método de pago a partir del ID proporcionado
         MetodoPago metodoPago = metodoPagoService.findById(ticketDto.getIdMetodoPago())
@@ -198,8 +191,8 @@ public class TicketController {
         Usuario usuario = usuarioService.findById(ticketDto.getIdUsuario())
                 .orElseThrow(() -> new IllegalArgumentException("El usuario especificado no existe"));
         
-        // Asignar el total del DetalleGeneral al campo montoTotal del TicketDto
-        ticketDto.setMontoTotal(detalleGeneral.getTotal());
+        // Asignar el total del DetalleProducto al campo montoTotal del TicketDto
+        ticketDto.setMontoTotal(detalleProducto.getTotal());
         
         // Calcular el cambio
         double cambio = ticketDto.getMontoPagado() - ticketDto.getMontoTotal();
@@ -213,7 +206,7 @@ public class TicketController {
                 cambio,  // Calculado automáticamente
                 ticketDto.getNombreEmpleado(),
                 metodoPago,
-                detalleGeneral,
+                detalleProducto,
                 usuario
         );
         
@@ -236,9 +229,9 @@ public class TicketController {
         // Obtener el ticket de la base de datos
         Ticket ticket = ticketOptional.get();
         
-        // Obtener el detalle general a partir del ID proporcionado en el DTO
-        DetalleGeneral detalleGeneral = detalleGeneralService.findById(ticketDto.getIdDetalleGeneral())
-                .orElseThrow(() -> new IllegalArgumentException("El detalle general especificado no existe"));
+        // Obtener el detalle producto a partir del ID proporcionado en el DTO
+        DetalleProducto detalleProducto = detalleProductoService.findById(ticketDto.getIdDetalleProducto())
+                .orElseThrow(() -> new IllegalArgumentException("El detalle producto especificado no existe"));
         
         // Obtener el método de pago a partir del ID proporcionado en el DTO
         MetodoPago metodoPago = metodoPagoService.findById(ticketDto.getIdMetodoPago())
@@ -249,14 +242,14 @@ public class TicketController {
                 .orElseThrow(() -> new IllegalArgumentException("El usuario especificado no existe"));
         
         // Actualizar los campos del ticket con los valores proporcionados en el DTO
-        ticket.setMontoTotal(detalleGeneral.getTotal());
+        ticket.setMontoTotal(detalleProducto.getTotal());
         ticket.setNombreEmpleado(ticketDto.getNombreEmpleado());
         ticket.setFechaPago(LocalDateTime.now());  // Se actualiza la fecha de pago
         ticket.setMontoPagado(ticketDto.getMontoPagado());
         double cambio = ticketDto.getMontoPagado() - ticket.getMontoTotal();  // Se recalcula el cambio
         ticket.setCambio(cambio);
         ticket.setMetodoPago(metodoPago);
-        ticket.setDetalleGeneral(detalleGeneral);
+        ticket.setDetalleProducto(detalleProducto);
         ticket.setUsuario(usuario);
         
         // Guardar el ticket actualizado en la base de datos

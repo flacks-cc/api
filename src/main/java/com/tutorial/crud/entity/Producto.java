@@ -19,20 +19,15 @@ public class Producto {
     private String descripcion;
     private int cantidadTotal;
     private Float precio;
-    
-    @ManyToOne
-    @JoinColumn(name = "idCategoria")
-    private Categoria categoria;
 
     public Producto() {
     }
 
-    public Producto(String nombre, String descripcion, int cantidadTotal, Float precio, Categoria categoria) {
+    public Producto(String nombre, String descripcion, int cantidadTotal, Float precio) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.cantidadTotal = cantidadTotal;
         this.precio = precio;
-        this.categoria = categoria;
     }
 
     public int getId() {
@@ -73,13 +68,5 @@ public class Producto {
 
     public void setPrecio(Float precio) {
         this.precio = precio;
-    }
-    
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
     }
 }

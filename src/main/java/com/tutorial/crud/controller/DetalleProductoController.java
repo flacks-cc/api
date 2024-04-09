@@ -1,9 +1,7 @@
 package com.tutorial.crud.controller;
 
-
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,26 +17,25 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.tutorial.crud.dto.DetalleGeneralDto;
+import com.tutorial.crud.dto.DetalleProductoDto;
 import com.tutorial.crud.dto.Mensaje;
-import com.tutorial.crud.entity.DetalleGeneral;
+import com.tutorial.crud.entity.DetalleProducto;
 import com.tutorial.crud.entity.Producto;
 import com.tutorial.crud.entity.Reservacion;
 import com.tutorial.crud.entity.Servicio;
 import com.tutorial.crud.security.entity.Usuario;
 import com.tutorial.crud.security.service.UsuarioService;
-import com.tutorial.crud.service.DetalleGeneralService;
+import com.tutorial.crud.service.DetalleProductoService;
 import com.tutorial.crud.service.ProductoService;
 import com.tutorial.crud.service.ReservacionService;
 
 @RestController
-@RequestMapping("/detallegeneral")
+@RequestMapping("/detalleproducto")
 @CrossOrigin(origins = "http://localhost:4200")
-public class DetalleGeneralController {
+public class DetalleProductoController {
 
     @Autowired
-    DetalleGeneralService detalleGeneralService;
+    DetalleProductoService detalleProductoService;
     
     @Autowired
     ProductoService productoService;
@@ -53,17 +50,17 @@ public class DetalleGeneralController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/lista")
-    public ResponseEntity<List<DetalleGeneral>> listAllDetalleGeneral() {
-        List<DetalleGeneral> listaDetalleGeneral = detalleGeneralService.list();
-        return ResponseEntity.ok(listaDetalleGeneral);
+    public ResponseEntity<List<DetalleProducto>> listAllDetalleProducto() {
+        List<DetalleProducto> listaDetalleProducto = detalleProductoService.list();
+        return ResponseEntity.ok(listaDetalleProducto);
     }
 
     @GetMapping("/detalle/{id}")
-    public ResponseEntity<Object> getDetalleGeneralById(@PathVariable("id") int id) {
-        Optional<DetalleGeneral> detalleGeneralOptional = detalleGeneralService.getOne(id);
-        if (detalleGeneralOptional.isPresent()) {
-            DetalleGeneral detalleGeneral = detalleGeneralOptional.get();
-            return ResponseEntity.ok(detalleGeneral);
+    public ResponseEntity<Object> getDetalleProductoById(@PathVariable("id") int id) {
+        Optional<DetalleProducto> detalleProductoOptional = detalleProductoService.getOne(id);
+        if (detalleProductoOptional.isPresent()) {
+            DetalleProducto detalleProducto = detalleProductoOptional.get();
+            return ResponseEntity.ok(detalleProducto);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -71,17 +68,17 @@ public class DetalleGeneralController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/eliminarDetalle/{id}")
-    public ResponseEntity<Object> deleteDetalleGeneral(@PathVariable("id") int id) {
-        if (detalleGeneralService.existsById(id)) {
-            detalleGeneralService.delete(id);
-            return ResponseEntity.ok(new Mensaje("Detalle General eliminado"));
+    public ResponseEntity<Object> deleteDetalleProducto(@PathVariable("id") int id) {
+        if (detalleProductoService.existsById(id)) {
+            detalleProductoService.delete(id);
+            return ResponseEntity.ok(new Mensaje("Detalle Producto eliminado"));
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("Detalle General no encontrado"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("Detalle Producto no encontrado"));
         }
     }
     
     @PostMapping("/creardetalle")
-    public ResponseEntity<?> crearDetalle(@RequestBody DetalleGeneralDto detalleDto) {
+    public ResponseEntity<?> crearDetalle(@RequestBody DetalleProductoDto detalleDto) {
         // Obtener el nombre de usuario del token
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String nombreUsuario = authentication.getName();
@@ -131,14 +128,14 @@ public class DetalleGeneralController {
         // Calcular el total como subtotal + precio de Servicio
         double total = subtotal + precioServicio;
         // Crear el detalle utilizando el constructor adecuado
-        DetalleGeneral detalle = new DetalleGeneral();
+        DetalleProducto detalle = new DetalleProducto();
         detalle.setCantidad(detalleDto.getCantidad());
         detalle.setTotal(total);
         detalle.setReservacion(reservacion);
         detalle.setProducto(producto);
         detalle.setUsuario(usuario);
         // Guardar el detalle
-        detalleGeneralService.save(detalle); 
+        detalleProductoService.save(detalle); 
         // Devolver una respuesta exitosa
         return ResponseEntity.ok(new Mensaje("Detalle creado exitosamente"));
     }
@@ -146,10 +143,10 @@ public class DetalleGeneralController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/actualizardetalle/{id}")
-    public ResponseEntity<Object> actualizarDetalle(@PathVariable("id") int id, @RequestBody DetalleGeneralDto detalleDto) {
-        Optional<DetalleGeneral> detalleOptional = detalleGeneralService.getOne(id);
+    public ResponseEntity<Object> actualizarDetalle(@PathVariable("id") int id, @RequestBody DetalleProductoDto detalleDto) {
+        Optional<DetalleProducto> detalleOptional = detalleProductoService.getOne(id);
         if (detalleOptional.isPresent()) {
-            DetalleGeneral detalle = detalleOptional.get();
+            DetalleProducto detalle = detalleOptional.get();
             
             // Actualizar los campos del detalle con los nuevos datos
             detalle.setCantidad(detalleDto.getCantidad());
@@ -186,7 +183,7 @@ public class DetalleGeneralController {
             detalle.setTotal(total);
             
             // Guardar el detalle actualizado
-            detalleGeneralService.save(detalle);
+            detalleProductoService.save(detalle);
 
             return ResponseEntity.ok(new Mensaje("Detalle actualizado exitosamente"));
         } else {

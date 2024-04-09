@@ -29,7 +29,7 @@ public class Contacto {
     @NotNull
     private String mensaje;
     
-    private String adjunto; 
+    private String adjunto;
 
     @Column(name = "fecha_mensaje")
     private LocalDateTime fechaMensaje;
@@ -49,9 +49,7 @@ public class Contacto {
         this.adjunto = adjunto;
         this.fechaMensaje = fechaMensaje;
         this.usuario = usuario;
-    }
-    
-    
+    } 
 
     // Getters y setters
 

@@ -34,7 +34,7 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "idDetalle", nullable = false)
-    private DetalleGeneral detalleGeneral;
+    private DetalleProducto detalleProducto;
 
     @ManyToOne
     @JoinColumn(name = "idMetodo", nullable = true)
@@ -42,7 +42,7 @@ public class Ticket {
     
     @ManyToOne
     @JoinColumn(name = "idUsuario", nullable = false)
-    @Valid 
+    @Valid
     private Usuario usuario;
 
     public Usuario getUsuario() {
@@ -57,7 +57,7 @@ public class Ticket {
     }
 
 	// Constructor con todos los campos
-    public Ticket(LocalDateTime fechaImpresion, double montoTotal, LocalDateTime fechaPago, double montoPagado, double cambio, String nombreEmpleado, MetodoPago metodoPago, DetalleGeneral detalleGeneral, Usuario usuario) {
+    public Ticket(LocalDateTime fechaImpresion, double montoTotal, LocalDateTime fechaPago, double montoPagado, double cambio, String nombreEmpleado, MetodoPago metodoPago, DetalleProducto detalleProducto, Usuario usuario) {
         this.fechaImpresion = fechaImpresion;
         this.montoTotal = montoTotal;
         this.fechaPago = fechaPago;
@@ -65,17 +65,16 @@ public class Ticket {
         this.cambio = cambio;
         this.nombreEmpleado = nombreEmpleado;
         this.metodoPago = metodoPago;
-        this.detalleGeneral = detalleGeneral;
+        this.detalleProducto = detalleProducto;
         this.usuario = usuario;
     }
     
-    public Ticket(LocalDateTime fechaImpresion, double montoTotal, DetalleGeneral detalleGeneral, Usuario usuario) {
+    public Ticket(LocalDateTime fechaImpresion, double montoTotal, DetalleProducto detalleProducto, Usuario usuario) {
         this.fechaImpresion = fechaImpresion;
         this.montoTotal = montoTotal;
-        this.detalleGeneral = detalleGeneral;
+        this.detalleProducto = detalleProducto;
         this.usuario = usuario;
     }
-
 
     public int getId() {
 		return id;
@@ -133,12 +132,12 @@ public class Ticket {
 		this.nombreEmpleado = nombreEmpleado;
 	}
 
-	public DetalleGeneral getDetalleGeneral() {
-		return detalleGeneral;
+	public DetalleProducto getDetalleProducto() {
+		return detalleProducto;
 	}
 
-	public void setDetalleGeneral(DetalleGeneral detalleGeneral) {
-		this.detalleGeneral = detalleGeneral;
+	public void setDetalleProducto(DetalleProducto detalleProducto) {
+		this.detalleProducto = detalleProducto;
 	}
 
 	public MetodoPago getMetodoPago() {

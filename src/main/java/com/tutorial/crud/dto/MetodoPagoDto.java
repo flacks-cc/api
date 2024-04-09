@@ -4,8 +4,7 @@ import javax.validation.constraints.NotBlank;
 
 public class MetodoPagoDto {
 
-
-    @NotBlank(message = "El nombre del metood de pago es obligatorio")
+    @NotBlank(message = "El nombre del metodo de pago es obligatorio")
     private String metodoNombre;
 
     public String getMetodoNombre() {
