@@ -1,73 +1,94 @@
 package com.tutorial.crud.entity;
 
+import java.time.Duration;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.Size;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "Servicios")
 public class Servicio {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    
-    @Size(max = 50)
-    private String nombre;
-    
-    private String descripcion;
-    
-    private float precio;
-    
-    private int duracion;
 
-    public Servicio() {
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_servicio")
+	private Long idServicio;
 
-    public Servicio(String nombre, String descripcion, float precio, int duracion) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.precio = precio;
-        this.duracion = duracion;
-    }
+	@NotNull(message = "El nombre no puede ser nulo")
+	@Column(name = "nombre", unique = true, nullable = false, length = 50)
+	private String nombre;
 
-    public int getId() {
-        return id;
-    }
+	@Column(name = "descripcion", length = 255)
+	private String descripcion;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	@NotNull(message = "El precio no puede ser nulo")
+	@Column(name = "precio", nullable = false)
+	private double precio;
 
-    public String getNombre() {
-        return nombre;
-    }
+	@Column(name = "duracion")
+	private Duration duracion;
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+	// Constructor vacío
+	public Servicio() {
 	}
 
-    public String getDescripcion() {
-        return descripcion;
-    }
+	// Constructor con todos los atributos
+	public Servicio(String nombre, String descripcion, double precio, Duration duracion) {
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.precio = precio;
+		this.duracion = duracion;
+	}
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
+	// Getters y setters
+	public Long getIdServicio() {
+		return idServicio;
+	}
 
-    public float getPrecio() {
-        return precio;
-    }
+	public void setIdServicio(Long idServicio) {
+		this.idServicio = idServicio;
+	}
 
-    public void setPrecio(float precio) {
-        this.precio = precio;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public int getDuracion() {
-        return duracion;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    public void setDuracion(int duracion) {
-        this.duracion = duracion;
-    }
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	public double getPrecio() {
+		return precio;
+	}
+
+	public void setPrecio(double precio) {
+		this.precio = precio;
+	}
+
+	public Duration getDuracion() {
+		return duracion;
+	}
+
+	public void setDuracion(Duration duracion) {
+		this.duracion = duracion;
+	}
+
+	// Método toString
+	@Override
+	public String toString() {
+		return "Servicio [idServicio=" + idServicio + ", nombre=" + nombre + ", descripcion=" + descripcion
+				+ ", precio=" + precio + ", duracion=" + duracion + "]";
+	}
 }

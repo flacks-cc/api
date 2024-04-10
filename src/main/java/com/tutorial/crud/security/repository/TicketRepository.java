@@ -1,10 +1,9 @@
 package com.tutorial.crud.security.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import com.tutorial.crud.entity.Ticket;
 
-@Repository
-public interface TicketRepository extends JpaRepository<Ticket, Integer> {
+public interface TicketRepository extends JpaRepository<Ticket, Long> {
+
+	boolean existsByNombre(String nombre);
 }

@@ -1,9 +1,11 @@
 package com.tutorial.crud.security.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import com.tutorial.crud.entity.DetalleProducto;
+import com.tutorial.crud.entity.Reserva;
 
-@Repository
-public interface DetalleProductoRepository extends JpaRepository<DetalleProducto, Integer> {
+public interface DetalleProductoRepository extends JpaRepository<DetalleProducto, Long> {
+	
+    List<DetalleProducto> findByReserva(Reserva reserva);
 }

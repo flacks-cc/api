@@ -23,52 +23,17 @@ import com.tutorial.crud.entity.Producto;
 import com.tutorial.crud.service.ProductoService;
 
 @RestController
-@RequestMapping("/producto")
+@RequestMapping("api/producto")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProductoController {
 
 	@Autowired
 	ProductoService productoService;
 
-	// Endpoint para obtener la lista de todos los productos
-	@GetMapping("/lista")
-	public ResponseEntity<List<Producto>> list() {
-		List<Producto> list = productoService.list();
-		return new ResponseEntity<>(list, HttpStatus.OK);
-	}
-
-	// Endpoint para obtener los detalles de un producto por su ID
-	@GetMapping("/detail/{id}")
-	public ResponseEntity<Object> getById(@PathVariable("id") int id) {
-		if (!productoService.existsById(id))
-			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
-		Producto producto = productoService.getOne(id).get();
-		return new ResponseEntity<>(producto, HttpStatus.OK);
-	}
-
-	// Endpoint para obtener los detalles de un producto por su nombre
-	@GetMapping("/detailname/{nombre}")
-	public ResponseEntity<Object> getByNombre(@PathVariable("nombre") String nombre) {
-		if (!productoService.existsByNombre(nombre))
-			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
-		Producto producto = productoService.getByNombre(nombre).get();
-		return new ResponseEntity<>(producto, HttpStatus.OK);
-	}
-
-	// Endpoint para eliminar un producto
-	@PreAuthorize("hasRole('ADMIN')")
-	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<Object> delete(@PathVariable("id") int id) {
-		if (!productoService.existsById(id))
-			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
-		productoService.delete(id);
-		return new ResponseEntity<>(new Mensaje("Producto eliminado"), HttpStatus.OK);
-	}
-
 	// Endpoint para crear un nuevo producto
 	@PreAuthorize("hasRole('ADMIN')")
-	@PostMapping("/create")
-	public ResponseEntity<?> create(@RequestBody @Valid ProductoDto productoDto, BindingResult bindingResult) {
+	@PostMapping("/createProduct")
+	public ResponseEntity<?> createProduct(@RequestBody @Valid ProductoDto productoDto, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			StringBuilder errorMessage = new StringBuilder();
 			bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
@@ -80,16 +45,41 @@ public class ProductoController {
 			return ResponseEntity.badRequest().body(new Mensaje("Ya existe un producto con el mismo nombre"));
 		}
 
-		Producto producto = new Producto(productoDto.getNombre(), productoDto.getDescripcion(),
-				productoDto.getCantidadTotal(), productoDto.getPrecio());
+		Producto producto = new Producto();
 		productoService.save(producto);
 		return ResponseEntity.ok(new Mensaje("Producto creado exitosamente"));
 	}
 
-	@PreAuthorize("hasRole('ADMIN')")
-	@PutMapping("/update/{id}")
-	public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody @Valid ProductoDto productoDto,
-			BindingResult bindingResult) {
+	// Endpoint para obtener la lista de todos los productos
+	@GetMapping("/getAllProducts")
+	public ResponseEntity<List<Producto>> getAllProducts() {
+		List<Producto> list = productoService.findAll();
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
+
+	// Endpoint para obtener los detalles de un producto por su ID
+	@GetMapping("/getProductById/{idProducto}")
+	public ResponseEntity<Object> getProductById(@PathVariable("idProducto") Long idProducto) {
+		if (!productoService.existsById(idProducto))
+			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
+		Producto producto = productoService.findById(idProducto).get();
+		return new ResponseEntity<>(producto, HttpStatus.OK);
+	}
+
+	// Endpoint para obtener los detalles de un producto por su nombre
+	@GetMapping("/getProductByName/{nombre}")
+	public ResponseEntity<Object> getProductByName(@PathVariable("nombre") String nombre) {
+		if (!productoService.existsByNombre(nombre))
+			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
+		Producto producto = productoService.findByNombre(nombre).get();
+		return new ResponseEntity<>(producto, HttpStatus.OK);
+	}
+
+	// Endpoint para actualizar un producto
+	@PreAuthorize("hasRole('USER') and hasRole('ADMIN')")
+	@PutMapping("/updateProduct/{idProducto}")
+	public ResponseEntity<?> updateProduct(@PathVariable("idProducto") Long idProducto,
+			@RequestBody @Valid ProductoDto productoDto, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			StringBuilder errorMessage = new StringBuilder();
 			bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
@@ -97,7 +87,7 @@ public class ProductoController {
 		}
 
 		// Verificar si el producto con el ID especificado existe
-		Optional<Producto> existingProductoOptional = productoService.getOne(id);
+		Optional<Producto> existingProductoOptional = productoService.findById(idProducto);
 		if (!existingProductoOptional.isPresent()) {
 			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
 		}
@@ -113,10 +103,20 @@ public class ProductoController {
 
 		existingProducto.setNombre(productoDto.getNombre());
 		existingProducto.setDescripcion(productoDto.getDescripcion());
-		existingProducto.setCantidadTotal(productoDto.getCantidadTotal());
+		existingProducto.setStock(productoDto.getStock());
 		existingProducto.setPrecio(productoDto.getPrecio());
 		productoService.save(existingProducto);
 
 		return ResponseEntity.ok(new Mensaje("Producto actualizado exitosamente"));
+	}
+
+	// Endpoint para eliminar un producto
+	@PreAuthorize("hasRole('ADMIN')")
+	@DeleteMapping("/deleteProduct/{idProducto}")
+	public ResponseEntity<Object> deleteProduct(@PathVariable("idProducto") Long idProducto) {
+		if (!productoService.existsById(idProducto))
+			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
+		productoService.deleteById(idProducto);
+		return new ResponseEntity<>(new Mensaje("Producto eliminado"), HttpStatus.OK);
 	}
 }

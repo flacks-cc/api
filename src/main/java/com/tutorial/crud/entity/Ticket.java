@@ -1,95 +1,94 @@
 package com.tutorial.crud.entity;
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
+import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import com.tutorial.crud.security.entity.Usuario;
 
 @Entity
+@Table(name = "Tickets")
 public class Ticket {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
 
-    private LocalDateTime fechaImpresion;
-    
-    private double montoTotal; 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_ticket")
+	private Long idTicket;
 
-    private LocalDateTime fechaPago;
+	@NotNull(message = "La fecha y hora de expedición no puede ser nula")
+	@Column(name = "fecha_hora_expedicion", nullable = false)
+	private LocalDateTime fechaHoraExpedicion;
 
-    private double montoPagado; 
+	@NotNull(message = "El monto total no puede ser nulo")
+	@Min(value = 1, message = "El monto total debe ser mayor a cero")
+	@Column(name = "monto_total", nullable = false)
+	private double montoTotal;
 
-    private double cambio; 
-    
-    @Size(max = 50)
-    private String nombreEmpleado;
+	@Column(name = "fecha_hora_pago")
+	private LocalDateTime fechaHoraPago;
 
-    @ManyToOne
-    @JoinColumn(name = "idDetalle", nullable = false)
-    private DetalleProducto detalleProducto;
+	@Min(value = 1, message = "El monto pagado debe ser mayor a cero")
+	@Column(name = "monto_pagado")
+	private double montoPagado;
 
-    @ManyToOne
-    @JoinColumn(name = "idMetodo", nullable = true)
-    private MetodoPago metodoPago;
-    
-    @ManyToOne
-    @JoinColumn(name = "idUsuario", nullable = false)
-    @Valid
-    private Usuario usuario;
+	@Min(value = 0, message = "El cambio debe ser mayor o igual a cero")
+	@Column(name = "cambio")
+	private double cambio;
 
-    public Usuario getUsuario() {
-		return usuario;
-	}
+	@ManyToOne
+	@JoinColumn(name = "id_metodo_pago")
+	private MetodoPago metodoPago;
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
+	@ManyToOne
+	@NotNull(message = "El id del empleado no puede ser nulo")
+	@JoinColumn(name = "id_empleado", nullable = false)
+	private Usuario empleado;
 
+	@ManyToOne
+	@NotNull(message = "El id de la reserva no puede ser nulo")
+	@JoinColumn(name = "id_reserva", nullable = false)
+	private Reserva reserva;
+
+	// Constructor vacío
 	public Ticket() {
-    }
-
-	// Constructor con todos los campos
-    public Ticket(LocalDateTime fechaImpresion, double montoTotal, LocalDateTime fechaPago, double montoPagado, double cambio, String nombreEmpleado, MetodoPago metodoPago, DetalleProducto detalleProducto, Usuario usuario) {
-        this.fechaImpresion = fechaImpresion;
-        this.montoTotal = montoTotal;
-        this.fechaPago = fechaPago;
-        this.montoPagado = montoPagado;
-        this.cambio = cambio;
-        this.nombreEmpleado = nombreEmpleado;
-        this.metodoPago = metodoPago;
-        this.detalleProducto = detalleProducto;
-        this.usuario = usuario;
-    }
-    
-    public Ticket(LocalDateTime fechaImpresion, double montoTotal, DetalleProducto detalleProducto, Usuario usuario) {
-        this.fechaImpresion = fechaImpresion;
-        this.montoTotal = montoTotal;
-        this.detalleProducto = detalleProducto;
-        this.usuario = usuario;
-    }
-
-    public int getId() {
-		return id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	// Constructor con todos los atributos
+	public Ticket(LocalDateTime fechaHoraExpedicion, double montoTotal, LocalDateTime fechaHoraPago, double montoPagado,
+			double cambio, MetodoPago metodoPago, Usuario empleado, Reserva reserva) {
+		this.fechaHoraExpedicion = fechaHoraExpedicion;
+		this.montoTotal = montoTotal;
+		this.fechaHoraPago = fechaHoraPago;
+		this.montoPagado = montoPagado;
+		this.cambio = cambio;
+		this.metodoPago = metodoPago;
+		this.empleado = empleado;
+		this.reserva = reserva;
 	}
 
-	public LocalDateTime getFechaImpresion() {
-		return fechaImpresion;
+	// Getters y setters
+	public Long getIdTicket() {
+		return idTicket;
 	}
 
-	public void setFechaImpresion(LocalDateTime fechaImpresion) {
-		this.fechaImpresion = fechaImpresion;
+	public void setIdTicket(Long idTicket) {
+		this.idTicket = idTicket;
+	}
+
+	public LocalDateTime getFechaHoraExpedicion() {
+		return fechaHoraExpedicion;
+	}
+
+	public void setFechaHoraExpedicion(LocalDateTime fechaHoraExpedicion) {
+		this.fechaHoraExpedicion = fechaHoraExpedicion;
 	}
 
 	public double getMontoTotal() {
@@ -100,12 +99,12 @@ public class Ticket {
 		this.montoTotal = montoTotal;
 	}
 
-	public LocalDateTime getFechaPago() {
-		return fechaPago;
+	public LocalDateTime getFechaHoraPago() {
+		return fechaHoraPago;
 	}
 
-	public void setFechaPago(LocalDateTime fechaPago) {
-		this.fechaPago = fechaPago;
+	public void setFechaHoraPago(LocalDateTime fechaHoraPago) {
+		this.fechaHoraPago = fechaHoraPago;
 	}
 
 	public double getMontoPagado() {
@@ -124,27 +123,34 @@ public class Ticket {
 		this.cambio = cambio;
 	}
 
-	public String getNombreEmpleado() {
-		return nombreEmpleado;
-	}
-
-	public void setNombreEmpleado(String nombreEmpleado) {
-		this.nombreEmpleado = nombreEmpleado;
-	}
-
-	public DetalleProducto getDetalleProducto() {
-		return detalleProducto;
-	}
-
-	public void setDetalleProducto(DetalleProducto detalleProducto) {
-		this.detalleProducto = detalleProducto;
-	}
-
 	public MetodoPago getMetodoPago() {
 		return metodoPago;
 	}
 
 	public void setMetodoPago(MetodoPago metodoPago) {
 		this.metodoPago = metodoPago;
+	}
+
+	public Usuario getEmpleado() {
+		return empleado;
+	}
+
+	public void setEmpleado(Usuario empleado) {
+		this.empleado = empleado;
+	}
+
+	public Reserva getReserva() {
+		return reserva;
+	}
+
+	public void setReserva(Reserva reserva) {
+		this.reserva = reserva;
+	}
+
+	@Override
+	public String toString() {
+		return "Ticket [idTicket=" + idTicket + ", fechaHoraExpedicion=" + fechaHoraExpedicion + ", montoTotal="
+				+ montoTotal + ", fechaHoraPago=" + fechaHoraPago + ", montoPagado=" + montoPagado + ", cambio="
+				+ cambio + ", metodoPago=" + metodoPago + ", empleado=" + empleado + ", reserva=" + reserva + "]";
 	}
 }

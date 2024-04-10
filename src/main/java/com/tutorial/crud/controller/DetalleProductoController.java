@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,174 +19,144 @@ import com.tutorial.crud.dto.DetalleProductoDto;
 import com.tutorial.crud.dto.Mensaje;
 import com.tutorial.crud.entity.DetalleProducto;
 import com.tutorial.crud.entity.Producto;
-import com.tutorial.crud.entity.Reservacion;
+import com.tutorial.crud.entity.Reserva;
 import com.tutorial.crud.entity.Servicio;
-import com.tutorial.crud.security.entity.Usuario;
 import com.tutorial.crud.security.service.UsuarioService;
 import com.tutorial.crud.service.DetalleProductoService;
 import com.tutorial.crud.service.ProductoService;
-import com.tutorial.crud.service.ReservacionService;
+import com.tutorial.crud.service.ReservaService;
 
 @RestController
-@RequestMapping("/detalleproducto")
+@RequestMapping("/api/detalleProducto")
 @CrossOrigin(origins = "http://localhost:4200")
 public class DetalleProductoController {
 
-    @Autowired
-    DetalleProductoService detalleProductoService;
-    
-    @Autowired
-    ProductoService productoService;
-    
-    @Autowired
-    private ReservacionService reservacionService;
+	@Autowired
+	DetalleProductoService detalleProductoService;
 
-    @Autowired
-    private UsuarioService usuarioService;
-    
-   
+	@Autowired
+	ProductoService productoService;
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/lista")
-    public ResponseEntity<List<DetalleProducto>> listAllDetalleProducto() {
-        List<DetalleProducto> listaDetalleProducto = detalleProductoService.list();
-        return ResponseEntity.ok(listaDetalleProducto);
-    }
+	@Autowired
+	ReservaService reservaService;
 
-    @GetMapping("/detalle/{id}")
-    public ResponseEntity<Object> getDetalleProductoById(@PathVariable("id") int id) {
-        Optional<DetalleProducto> detalleProductoOptional = detalleProductoService.getOne(id);
-        if (detalleProductoOptional.isPresent()) {
-            DetalleProducto detalleProducto = detalleProductoOptional.get();
-            return ResponseEntity.ok(detalleProducto);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+	@Autowired
+	UsuarioService usuarioService;
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/eliminarDetalle/{id}")
-    public ResponseEntity<Object> deleteDetalleProducto(@PathVariable("id") int id) {
-        if (detalleProductoService.existsById(id)) {
-            detalleProductoService.delete(id);
-            return ResponseEntity.ok(new Mensaje("Detalle Producto eliminado"));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("Detalle Producto no encontrado"));
-        }
-    }
-    
-    @PostMapping("/creardetalle")
-    public ResponseEntity<?> crearDetalle(@RequestBody DetalleProductoDto detalleDto) {
-        // Obtener el nombre de usuario del token
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String nombreUsuario = authentication.getName();
-        
-        // Obtener el usuario a partir del nombre de usuario
-        Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
-        
-        // Obtener el producto a partir del ID proporcionado, si existe
-        Producto producto = null;
-        if (detalleDto.getIdProducto() != null) {
-            producto = productoService.findById(detalleDto.getIdProducto())
-                    .orElseThrow(() -> new IllegalArgumentException("El producto especificado no existe"));
-        }
-        // Reducir la cantidad del producto adquirida en el detalle de la cantidad total del producto, si existe
-        if (producto != null) {
-            int nuevaCantidad = producto.getCantidadTotal() - detalleDto.getCantidad();
-            if (nuevaCantidad < 0) {
-                return ResponseEntity.badRequest().body(new Mensaje("No hay suficientes unidades disponibles del producto"));
-            }
-            producto.setCantidadTotal(nuevaCantidad);
-        }
-        // Obtener la reservación a partir del ID proporcionado, si existe
-        Reservacion reservacion = null;
-        if (detalleDto.getIdReservacion() != null) {
-            reservacion = reservacionService.findById(detalleDto.getIdReservacion())
-                    .orElseThrow(() -> new IllegalArgumentException("La reservación especificada no existe"));
-        }
-        // Obtener el servicio asociado a la reservación, si existe
-        Servicio servicio = null;
-        if (reservacion != null) {
-            servicio = reservacion.getServicio();
-            if (servicio == null) {
-                return ResponseEntity.badRequest().body(new Mensaje("El servicio asociado a la reservación no existe"));
-            }
-        }
-        // Obtener el precio del servicio, si existe
-        double precioServicio = 0;
-        if (servicio != null) {
-            precioServicio = servicio.getPrecio();
-        }
-        // Calcular el subtotal como cantidad * precio de Producto, si existe
-        double subtotal = 0;
-        if (producto != null) {
-            subtotal = detalleDto.getCantidad() * producto.getPrecio();
-        }
-        // Calcular el total como subtotal + precio de Servicio
-        double total = subtotal + precioServicio;
-        // Crear el detalle utilizando el constructor adecuado
-        DetalleProducto detalle = new DetalleProducto();
-        detalle.setCantidad(detalleDto.getCantidad());
-        detalle.setTotal(total);
-        detalle.setReservacion(reservacion);
-        detalle.setProducto(producto);
-        detalle.setUsuario(usuario);
-        // Guardar el detalle
-        detalleProductoService.save(detalle); 
-        // Devolver una respuesta exitosa
-        return ResponseEntity.ok(new Mensaje("Detalle creado exitosamente"));
-    }
+	// Agrega un nuevo detalle de producto
+	@PostMapping("/createProductDetail")
+	public ResponseEntity<?> createProductDetail(@RequestBody DetalleProductoDto detalleProductoDto) {
+		Producto producto = null;
+		if (detalleProductoDto.getProducto() != null) {
+			producto = productoService.findById(detalleProductoDto.getProducto().getIdProducto())
+					.orElseThrow(() -> new IllegalArgumentException("El producto especificado no existe"));
+		}
+		if (producto != null) {
+			int nuevaCantidad = producto.getStock() - detalleProductoDto.getCantidad();
+			if (nuevaCantidad < 0) {
+				return ResponseEntity.badRequest()
+						.body(new Mensaje("No hay suficientes unidades disponibles del producto"));
+			}
+			producto.setStock(nuevaCantidad);
+		}
+		Reserva reserva = null;
+		if (detalleProductoDto.getReserva() != null) {
+			reserva = reservaService.findById(detalleProductoDto.getReserva().getIdReserva())
+					.orElseThrow(() -> new IllegalArgumentException("La reservación especificada no existe"));
+		}
+		Servicio servicio = null;
+		if (reserva != null) {
+			servicio = reserva.getServicio();
+			if (servicio == null) {
+				return ResponseEntity.badRequest().body(new Mensaje("El servicio asociado a la reservación no existe"));
+			}
+		}
+		double precioServicio = 0;
+		if (servicio != null) {
+			precioServicio = servicio.getPrecio();
+		}
+		double subtotal = 0;
+		if (producto != null) {
+			subtotal = detalleProductoDto.getCantidad() * producto.getPrecio();
+		}
+		double total = subtotal + precioServicio;
+		DetalleProducto detalle = new DetalleProducto();
+		detalle.setCantidad(detalleProductoDto.getCantidad());
+		detalle.setTotal(total);
+		detalle.setReserva(reserva);
+		detalle.setProducto(producto);
+		detalleProductoService.save(detalle);
+		return ResponseEntity.ok(new Mensaje("Detalle de producto creado exitosamente"));
+	}
 
+	// Obtiene todos los detalles de los productos
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/getAllProductsDetails")
+	public ResponseEntity<List<DetalleProducto>> getAllProductsDetails() {
+		List<DetalleProducto> listaDetalleProducto = detalleProductoService.findAll();
+		return ResponseEntity.ok(listaDetalleProducto);
+	}
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/actualizardetalle/{id}")
-    public ResponseEntity<Object> actualizarDetalle(@PathVariable("id") int id, @RequestBody DetalleProductoDto detalleDto) {
-        Optional<DetalleProducto> detalleOptional = detalleProductoService.getOne(id);
-        if (detalleOptional.isPresent()) {
-            DetalleProducto detalle = detalleOptional.get();
-            
-            // Actualizar los campos del detalle con los nuevos datos
-            detalle.setCantidad(detalleDto.getCantidad());
-            
-            // Obtener el producto a partir del ID proporcionado, si existe
-            Producto producto = null;
-            if (detalleDto.getIdProducto() != null) {
-                producto = productoService.findById(detalleDto.getIdProducto())
-                        .orElseThrow(() -> new IllegalArgumentException("El producto especificado no existe"));
-                detalle.setProducto(producto);
-            }
-            
-            // Obtener la reservación a partir del ID proporcionado, si existe
-            Reservacion reservacion = null;
-            if (detalleDto.getIdReservacion() != null) {
-                reservacion = reservacionService.findById(detalleDto.getIdReservacion())
-                        .orElseThrow(() -> new IllegalArgumentException("La reservación especificada no existe"));
-                detalle.setReservacion(reservacion);
-            }
-            
-            // Calcular el total
-            double precioProducto = 0;
-            if (producto != null) {
-                precioProducto = producto.getPrecio();
-            }
-            
-            double precioServicio = 0;
-            if (reservacion != null && reservacion.getServicio() != null) {
-                precioServicio = reservacion.getServicio().getPrecio();
-            }
-            
-            double subtotal = detalleDto.getCantidad() * precioProducto;
-            double total = subtotal + precioServicio;
-            detalle.setTotal(total);
-            
-            // Guardar el detalle actualizado
-            detalleProductoService.save(detalle);
+	// Obtiene un detalle específico de un producto por su ID
+	@GetMapping("/getProductDetailById/{idDetalleProducto}")
+	public ResponseEntity<Object> getProductDetailById(@PathVariable("idDetalleProducto") Long idDetalleProducto) {
+		Optional<DetalleProducto> detalleProductoOptional = detalleProductoService.findById(idDetalleProducto);
+		if (detalleProductoOptional.isPresent()) {
+			DetalleProducto detalleProducto = detalleProductoOptional.get();
+			return ResponseEntity.ok(detalleProducto);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
 
-            return ResponseEntity.ok(new Mensaje("Detalle actualizado exitosamente"));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+	// Actualiza un detalle de producto existente por su ID
+	@PreAuthorize("hasRole('ADMIN')")
+	@PutMapping("/updateProductDetail/{idDetalleProducto}")
+	public ResponseEntity<Object> updateProductDetail(@PathVariable("idDetalleProducto") Long idDetalleProducto,
+			@RequestBody DetalleProductoDto detalleProductoDto) {
+		Optional<DetalleProducto> detalleOptional = detalleProductoService.findById(idDetalleProducto);
+		if (detalleOptional.isPresent()) {
+			DetalleProducto detalle = detalleOptional.get();
+			detalle.setCantidad(detalleProductoDto.getCantidad());
+			Producto producto = null;
+			if (detalleProductoDto.getProducto() != null) {
+				producto = productoService.findById(detalleProductoDto.getProducto().getIdProducto())
+						.orElseThrow(() -> new IllegalArgumentException("El producto especificado no existe"));
+				detalle.setProducto(producto);
+			}
+			Reserva reserva = null;
+			if (detalleProductoDto.getReserva() != null) {
+				reserva = reservaService.findById(detalleProductoDto.getReserva().getIdReserva())
+						.orElseThrow(() -> new IllegalArgumentException("La reservación especificada no existe"));
+				detalle.setReserva(reserva);
+			}
+			double precioProducto = 0;
+			if (producto != null) {
+				precioProducto = producto.getPrecio();
+			}
+			double precioServicio = 0;
+			if (reserva != null && reserva.getServicio() != null) {
+				precioServicio = reserva.getServicio().getPrecio();
+			}
+			double subtotal = detalleProductoDto.getCantidad() * precioProducto;
+			double total = subtotal + precioServicio;
+			detalle.setTotal(total);
+			detalleProductoService.save(detalle);
+			return ResponseEntity.ok(new Mensaje("Detalle de producto actualizado exitosamente"));
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
 
+	// Elimina un detalle de producto por su ID
+	@PreAuthorize("hasRole('ADMIN')")
+	@DeleteMapping("/deleteProductDetail/{idDetalleProducto}")
+	public ResponseEntity<Object> deleteProductDetail(@PathVariable("idDetalleProducto") Long idDetalleProducto) {
+		if (detalleProductoService.existsById(idDetalleProducto)) {
+			detalleProductoService.deleteById(idDetalleProducto);
+			return ResponseEntity.ok(new Mensaje("Detalle de producto eliminado"));
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Mensaje("Detalle Producto no encontrado"));
+		}
+	}
 }

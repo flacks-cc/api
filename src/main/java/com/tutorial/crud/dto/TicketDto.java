@@ -1,178 +1,234 @@
 package com.tutorial.crud.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import com.tutorial.crud.entity.DetalleProducto;
+import java.time.LocalTime;
+import java.util.List;
+
+import com.tutorial.crud.dto.DetalleProductoDto.ProductoDetailsDTO;
 import com.tutorial.crud.entity.MetodoPago;
+import com.tutorial.crud.entity.Reserva;
 import com.tutorial.crud.security.entity.Usuario;
 
 public class TicketDto {
 
-    private int id;
+	private Long idTicket;
 
-    private LocalDateTime fechaImpresion;
-    
-    private double montoTotal; 
+	private LocalDateTime fechaHoraExpedicion;
 
-    private LocalDateTime fechaPago;
+	private double montoTotal;
 
-    private double montoPagado; 
+	private LocalDateTime fechaHoraPago;
 
-    private double cambio; 
-    
-    @Size(max = 50)
-    private String nombreEmpleado;
+	private double montoPagado;
 
-    private int idMetodoPago;
+	private double cambio;
 
-    @NotNull(message = "El id del detalle general debe ser ingresado y no puede ser nulo")
-    private int idDetalleProducto;
-    
-    @NotNull(message = "El id del usuario debe ser ingresado y no puede ser nulo")
-    private int idUsuario;
-   
-    private MetodoPago metodoPago;
-    
-    private DetalleProducto detalleProducto;
-    
-    private Usuario usuario;
+	private MetodoPago metodoPago;
 
-    public TicketDto() {
-    }
+	private Usuario empleado;
 
-    public int getId() {
-        return id;
-    }
+	private Reserva reserva;
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	// Constructor vacío
+	public TicketDto() {
+	}
 
-    public LocalDateTime getFechaImpresion() {
-        return fechaImpresion;
-    }
+	// Constructor con todos los atributos
+	public TicketDto(LocalDateTime fechaHoraExpedicion, double montoTotal, LocalDateTime fechaHoraPago,
+			double montoPagado, double cambio, MetodoPago metodoPago, Usuario empleado, Reserva reserva) {
+		this.fechaHoraExpedicion = fechaHoraExpedicion;
+		this.montoTotal = montoTotal;
+		this.fechaHoraPago = fechaHoraPago;
+		this.montoPagado = montoPagado;
+		this.cambio = cambio;
+		this.metodoPago = metodoPago;
+		this.empleado = empleado;
+		this.reserva = reserva;
+	}
 
-    public void setFechaImpresion(LocalDateTime fechaImpresion) {
-        this.fechaImpresion = fechaImpresion;
-    }
+	// Getters y setters
+	public Long getIdTicket() {
+		return idTicket;
+	}
 
-    public double getMontoTotal() {
-        return montoTotal;
-    }
+	public void setIdTicket(Long idTicket) {
+		this.idTicket = idTicket;
+	}
 
-    public void setMontoTotal(double montoTotal) {
-        this.montoTotal = montoTotal;
-    }
+	public LocalDateTime getFechaHoraExpedicion() {
+		return fechaHoraExpedicion;
+	}
 
-    public LocalDateTime getFechaPago() {
-        return fechaPago;
-    }
+	public void setFechaHoraExpedicion(LocalDateTime fechaHoraExpedicion) {
+		this.fechaHoraExpedicion = fechaHoraExpedicion;
+	}
 
-    public void setFechaPago(LocalDateTime fechaPago) {
-        this.fechaPago = fechaPago;
-    }
+	public double getMontoTotal() {
+		return montoTotal;
+	}
 
-    public double getMontoPagado() {
-        return montoPagado;
-    }
+	public void setMontoTotal(double montoTotal) {
+		this.montoTotal = montoTotal;
+	}
 
-    public void setMontoPagado(double montoPagado) {
-        this.montoPagado = montoPagado;
-    }
+	public LocalDateTime getFechaHoraPago() {
+		return fechaHoraPago;
+	}
 
-    public double getCambio() {
-        return cambio;
-    }
+	public void setFechaHoraPago(LocalDateTime fechaHoraPago) {
+		this.fechaHoraPago = fechaHoraPago;
+	}
 
-    public void setCambio(double cambio) {
-        this.cambio = cambio;
-    }
+	public double getMontoPagado() {
+		return montoPagado;
+	}
 
-    public String getNombreEmpleado() {
-        return nombreEmpleado;
-    }
+	public void setMontoPagado(double montoPagado) {
+		this.montoPagado = montoPagado;
+	}
 
-    public void setNombreEmpleado(String nombreEmpleado) {
-        this.nombreEmpleado = nombreEmpleado;
-    }
+	public double getCambio() {
+		return cambio;
+	}
 
-    public int getIdMetodoPago() {
-        return idMetodoPago;
-    }
+	public void setCambio(double cambio) {
+		this.cambio = cambio;
+	}
 
-    public void setIdMetodoPago(int idMetodoPago) {
-        this.idMetodoPago = idMetodoPago;
-    }
+	public MetodoPago getMetodoPago() {
+		return metodoPago;
+	}
 
-    public int getIdDetalleProducto() {
-        return idDetalleProducto;
-    }
+	public void setMetodoPago(MetodoPago metodoPago) {
+		this.metodoPago = metodoPago;
+	}
 
-    public void setIdDetalleProducto(int idDetalleProducto) {
-        this.idDetalleProducto = idDetalleProducto;
-    }
+	public Usuario getEmpleado() {
+		return empleado;
+	}
 
-    public int getIdUsuario() {
-        return idUsuario;
-    }
+	public void setEmpleado(Usuario empleado) {
+		this.empleado = empleado;
+	}
 
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
-    }
+	public Reserva getReserva() {
+		return reserva;
+	}
 
-    public MetodoPago getMetodoPago() {
-        return metodoPago;
-    }
+	public void setReserva(Reserva reserva) {
+		this.reserva = reserva;
+	}
 
-    public void setMetodoPago(MetodoPago metodoPago) {
-        this.metodoPago = metodoPago;
-    }
+	public static class TicketDetailsDTO {
+		private LocalDateTime fechaHoraExpedicion;
+		private double montoTotal;
+		private LocalDateTime fechaHoraPago;
+		private double montoPagado;
+		private double cambio;
+		private String metodoPago;
+		private String nombreCompletoEmpleado;
+		private LocalDate fechaReserva;
+		private LocalTime horaReserva;
+		private String nombreServicio;
+		private double precioServicio;
+		public List<ProductoDetailsDTO> productos;
 
-    public DetalleProducto getDetalleProducto() {
-        return detalleProducto;
-    }
+		// Constructor, getters y setters
+		public LocalDateTime getFechaHoraExpedicion() {
+			return fechaHoraExpedicion;
+		}
 
-    public void setDetalleProducto(DetalleProducto detalleProducto) {
-        this.detalleProducto = detalleProducto;
-    }
+		public void setFechaHoraExpedicion(LocalDateTime fechaHoraExpedicion) {
+			this.fechaHoraExpedicion = fechaHoraExpedicion;
+		}
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
+		public double getMontoTotal() {
+			return montoTotal;
+		}
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-    
-    
-    public TicketDto(int id, LocalDateTime fechaImpresion, double montoTotal, LocalDateTime fechaPago, double montoPagado, double cambio, String nombreEmpleado, int idMetodoPago, int idDetalleProducto, int idUsuario, MetodoPago metodoPago, DetalleProducto detalleProducto, Usuario usuario) {
-        this.id = id;
-        this.fechaImpresion = fechaImpresion;
-        this.montoTotal = montoTotal;
-        this.fechaPago = fechaPago;
-        this.montoPagado = montoPagado;
-        this.cambio = cambio;
-        this.nombreEmpleado = nombreEmpleado;
-        
-        if (metodoPago != null) {
-            this.metodoPago = metodoPago;
-            this.idMetodoPago = metodoPago.getId();
-        }
-        
-        if (detalleProducto != null) {
-            this.detalleProducto = detalleProducto;
-            this.idDetalleProducto = detalleProducto.getId();
-        }
-        
-        if (usuario != null) {
-            this.usuario = usuario;
-            this.idUsuario = usuario.getId();
-        }
-    }
-    
+		public void setMontoTotal(double montoTotal) {
+			this.montoTotal = montoTotal;
+		}
 
+		public LocalDateTime getFechaHoraPago() {
+			return fechaHoraPago;
+		}
 
+		public void setFechaHoraPago(LocalDateTime fechaHoraPago) {
+			this.fechaHoraPago = fechaHoraPago;
+		}
 
+		public double getMontoPagado() {
+			return montoPagado;
+		}
 
+		public void setMontoPagado(double montoPagado) {
+			this.montoPagado = montoPagado;
+		}
+
+		public double getCambio() {
+			return cambio;
+		}
+
+		public void setCambio(double cambio) {
+			this.cambio = cambio;
+		}
+
+		public String getMetodoPago() {
+			return metodoPago;
+		}
+
+		public void setMetodoPago(String metodoPago) {
+			this.metodoPago = metodoPago;
+		}
+
+		public String getNombreCompletoEmpleado() {
+			return nombreCompletoEmpleado;
+		}
+
+		public void setNombreCompletoEmpleado(String nombreCompletoEmpleado) {
+			this.nombreCompletoEmpleado = nombreCompletoEmpleado;
+		}
+
+		public LocalDate getFechaReserva() {
+			return fechaReserva;
+		}
+
+		public void setFechaReserva(LocalDate fechaReserva) {
+			this.fechaReserva = fechaReserva;
+		}
+
+		public LocalTime getHoraReserva() {
+			return horaReserva;
+		}
+
+		public void setHoraReserva(LocalTime horaReserva) {
+			this.horaReserva = horaReserva;
+		}
+
+		public String getNombreServicio() {
+			return nombreServicio;
+		}
+
+		public void setNombreServicio(String nombreServicio) {
+			this.nombreServicio = nombreServicio;
+		}
+
+		public double getPrecioServicio() {
+			return precioServicio;
+		}
+
+		public void setPrecioServicio(double precioServicio) {
+			this.precioServicio = precioServicio;
+		}
+
+		public List<ProductoDetailsDTO> getProductos() {
+			return productos;
+		}
+
+		public void setProductos(List<ProductoDetailsDTO> productos) {
+			this.productos = productos;
+		}
+	}
 }

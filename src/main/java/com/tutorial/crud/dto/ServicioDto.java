@@ -1,68 +1,69 @@
 package com.tutorial.crud.dto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.time.Duration;
 
 public class ServicioDto {
 
-    @NotNull(message = "El nombre es obligatorio")
-    @NotBlank(message = "El nombre no puede estar vacío")
-    private String nombre;
+	private Long idServicio;
 
-    @NotNull(message = "La descripcion es obligatoria")
-    private String descripcion;
+	private String nombre;
 
-    @NotNull(message = "El precio es obligatorio")
-    private Float precio;
+	private String descripcion;
 
-    @NotNull(message = "La duración es obligatoria")
-    private int duracion;
+	private double precio;
 
-    // Constructor vacío
-    public ServicioDto() {
-    }
+	private Duration duracion;
 
-    // Constructor con todos los campos
-    public ServicioDto(String nombre, String descripcion, Float precio, int duracion) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.precio = precio;
-        this.duracion = duracion;
-    }
+	// Constructor vacío
+	public ServicioDto() {
+	}
 
-    // Getter y Setter para nombre
-    public String getNombre() {
-        return nombre;
-    }
+	// Constructor con todos los atributos
+	public ServicioDto(String nombre, String descripcion, double precio, Duration duracion) {
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.precio = precio;
+		this.duracion = duracion;
+	}
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+	// Getters y setters
+	public Long getIdServicio() {
+		return idServicio;
+	}
 
-    // Getter y Setter para descripción
-    public String getDescripcion() {
-        return descripcion;
-    }
+	public void setIdServicio(Long idServicio) {
+		this.idServicio = idServicio;
+	}
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    // Getter y Setter para precio
-    public Float getPrecio() {
-        return precio;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-    public void setPrecio(Float precio) {
-        this.precio = precio;
-    }
+	public String getDescripcion() {
+		return descripcion;
+	}
 
-    // Getter y Setter para duración
-    public int getDuracion() {
-        return duracion;
-    }
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
 
-    public void setDuracion(int duracion) {
-        this.duracion = duracion;
-    }
+	public double getPrecio() {
+		return precio;
+	}
+
+	public void setPrecio(double precio) {
+		this.precio = precio;
+	}
+
+	public Duration getDuracion() {
+		return duracion;
+	}
+
+	public void setDuracion(Duration duracion) {
+		this.duracion = duracion;
+	}
 }
