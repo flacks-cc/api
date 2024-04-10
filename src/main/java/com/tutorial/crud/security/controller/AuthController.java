@@ -66,30 +66,41 @@ public class AuthController {
 
 	@PostMapping("/nuevo")
 	public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
-		if (bindingResult.hasErrors())
-			return new ResponseEntity(new Mensaje("Campos incorrectos o email invalido"), HttpStatus.BAD_REQUEST);
-		if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
-			return new ResponseEntity(new Mensaje("Este usuario ya existe"), HttpStatus.BAD_REQUEST);
-		if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-			return new ResponseEntity(new Mensaje("Este email ya existe"), HttpStatus.BAD_REQUEST);
-		if (usuarioService.existsByTelefono(nuevoUsuario.getTelefono())) // Verificar si el teléfono ya existe
-			return new ResponseEntity(new Mensaje("Este teléfono ya existe"), HttpStatus.BAD_REQUEST);
+	    try {
+	        if (bindingResult.hasErrors())
+	            throw new IllegalArgumentException("Campos incorrectos o email invalido");
 
-		Usuario usuario = new Usuario(nuevoUsuario.getNombre(), nuevoUsuario.getApellidoPaterno(),
-				nuevoUsuario.getApellidoMaterno(), nuevoUsuario.getTelefono(), nuevoUsuario.getNombreUsuario(),
-				nuevoUsuario.getEmail(), passwordEncoder.encode(nuevoUsuario.getPassword()));
+	        if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
+	            throw new IllegalArgumentException("Este usuario ya existe");
 
-		Set<Rol> roles = new HashSet<>();
-		roles.add(rolService.getByNombre(RolNombre.ROLE_USER).get());
-		if (nuevoUsuario.getRoles().contains("admin"))
-			roles.add(rolService.getByNombre(RolNombre.ROLE_ADMIN).get());
-		if (nuevoUsuario.getRoles().contains("empleado"))
-			roles.add(rolService.getByNombre(RolNombre.ROLE_EMPLEADO).get());
+	        if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
+	            throw new IllegalArgumentException("Este email ya existe");
 
-		usuario.setRoles(roles);
-		usuarioService.save(usuario);
+	        if (usuarioService.existsByTelefono(nuevoUsuario.getTelefono()))
+	            throw new IllegalArgumentException("Este teléfono ya existe");
 
-		return new ResponseEntity(new Mensaje("Usuario guardado"), HttpStatus.CREATED);
+	        Usuario usuario = new Usuario(nuevoUsuario.getNombre(), nuevoUsuario.getApellidoPaterno(),
+	                nuevoUsuario.getApellidoMaterno(), nuevoUsuario.getTelefono(), nuevoUsuario.getNombreUsuario(),
+	                nuevoUsuario.getEmail(), passwordEncoder.encode(nuevoUsuario.getPassword()));
+
+	        Set<Rol> roles = new HashSet<>();
+	        roles.add(rolService.getByNombre(RolNombre.ROLE_USER).orElseThrow(() -> new RuntimeException("No se encontró el rol de usuario")));
+
+	        if (nuevoUsuario.getRoles().contains("admin"))
+	            roles.add(rolService.getByNombre(RolNombre.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("No se encontró el rol de administrador")));
+	        
+	        if (nuevoUsuario.getRoles().contains("empleado"))
+	            roles.add(rolService.getByNombre(RolNombre.ROLE_EMPLEADO).orElseThrow(() -> new RuntimeException("No se encontró el rol de empleado")));
+
+	        usuario.setRoles(roles);
+	        usuarioService.save(usuario);
+
+	        return new ResponseEntity(new Mensaje("Usuario guardado"), HttpStatus.CREATED);
+	    } catch (IllegalArgumentException e) {
+	        return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
+	    } catch (Exception e) {
+	        return new ResponseEntity(new Mensaje("Ocurrió un error al procesar la solicitud"), HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
 	}
 
 	@PostMapping("/login")

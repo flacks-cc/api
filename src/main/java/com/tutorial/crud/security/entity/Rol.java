@@ -1,12 +1,8 @@
 package com.tutorial.crud.security.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-
+import javax.validation.constraints.NotNull;
 import com.tutorial.crud.security.enums.RolNombre;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -16,17 +12,15 @@ public class Rol {
 	@Column(name = "id_rol")
 	private Long idRol;
 
-	@NotBlank
+	@NotNull
 	@Column(name = "nombre", unique = true, nullable = false, length = 50)
+	@Enumerated(EnumType.STRING)
 	private RolNombre nombre;
-
-	@ManyToMany(mappedBy = "roles")
-	private Set<Usuario> usuarios = new HashSet<>();
 
 	public Rol() {
 	}
 
-	public Rol(RolNombre nombre) {
+	public Rol(@NotNull RolNombre nombre) {
 		this.nombre = nombre;
 	}
 
@@ -44,14 +38,6 @@ public class Rol {
 
 	public void setNombre(RolNombre nombre) {
 		this.nombre = nombre;
-	}
-
-	public Set<Usuario> getUsuarios() {
-		return usuarios;
-	}
-
-	public void setUsuarios(Set<Usuario> usuarios) {
-		this.usuarios = usuarios;
 	}
 
 	// Método toString
