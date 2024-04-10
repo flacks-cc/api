@@ -7,13 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.tutorial.crud.entity.Reserva;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
-	boolean existsByFechaReserva(String fechaReserva);
+	boolean existsByFecha(String fecha);
 
-	boolean existsByHoraInicioBetweenAndFechaReserva(LocalTime horaInicio, LocalTime horaFin, LocalDate fechaReserva);
+	boolean existsByHoraInicioBetweenAndFecha(LocalTime horaInicio, LocalTime horaFin, LocalDate fecha);
 
-	boolean existsByHoraInicioAndFechaReserva(LocalTime horaInicio, LocalDate fechaReserva);
+	boolean existsByHoraInicioAndFecha(LocalTime horaInicio, LocalDate fecha);
 
-	boolean existsByHoraFinAndFechaReserva(LocalTime horaFin, LocalDate fechaReserva);
+	boolean existsByHoraFinAndFecha(LocalTime horaFin, LocalDate fecha);
 
 	boolean existsByHoraInicioBeforeAndHoraFinAfter(LocalTime horaFin, LocalTime horaInicio);
 
@@ -21,7 +21,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 	List<Reserva> findByHoraInicioBetweenOrHoraFinBetween(LocalTime start1, LocalTime end1, LocalTime start2,
 			LocalTime end2);
 
-	List<Reserva> findByHoraInicioBetweenAndFechaReservaOrHoraFinBetweenAndFechaReserva(LocalTime horaInicio1,
-			LocalTime horaFin1, LocalDate fechaReserva1, LocalTime horaInicio2, LocalTime horaFin2,
-			LocalDate fechaReserva2);
+	List<Reserva> findByHoraInicioBetweenAndFechaOrHoraFinBetweenAndFecha(LocalTime horaInicio1,
+			LocalTime horaFin1, LocalDate fecha1, LocalTime horaInicio2, LocalTime horaFin2,
+			LocalDate fecha2);
 }

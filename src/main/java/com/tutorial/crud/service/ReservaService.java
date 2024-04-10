@@ -49,8 +49,8 @@ public class ReservaService {
 	}
 
 	// Verifica si una reserva existe por su fecha
-	public boolean existsByFechaReserva(String fecha) {
-		return reservaRepository.existsByFechaReserva(fecha);
+	public boolean existsByFecha(String fecha) {
+		return reservaRepository.existsByFecha(fecha);
 	}
 	
 	public List<DetalleProducto> getProductosByReserva(Reserva reserva) {
@@ -67,19 +67,19 @@ public class ReservaService {
 
 	// Método para verificar si existe alguna reservación en el intervalo de tiempo
 	// deseado para el día especificado
-	public boolean existeReservaEnIntervaloParaDia(LocalTime horaInicio, LocalTime horaFin, LocalDate fechaReserva) {
+	public boolean existeReservaEnIntervaloParaDia(LocalTime horaInicio, LocalTime horaFin, LocalDate Fecha) {
 		List<Reserva> reservaes = reservaRepository
-				.findByHoraInicioBetweenAndFechaReservaOrHoraFinBetweenAndFechaReserva(horaInicio, horaFin,
-						fechaReserva, horaInicio, horaFin, fechaReserva);
+				.findByHoraInicioBetweenAndFechaOrHoraFinBetweenAndFecha(horaInicio, horaFin,
+						Fecha, horaInicio, horaFin, Fecha);
 		return !reservaes.isEmpty();
 	}
 
 	// Método en el servicio de reservaes para verificar si existe alguna
 	// reservación en la misma hora pero en otro día
-	public boolean existeReservaEnMismaHoraOtroDia(LocalTime horaInicio, LocalTime horaFin, LocalDate fechaReserva) {
+	public boolean existeReservaEnMismaHoraOtroDia(LocalTime horaInicio, LocalTime horaFin, LocalDate Fecha) {
 		// Verificar si existe alguna reservación en la misma hora pero en otro día
-		return reservaRepository.existsByHoraInicioAndFechaReserva(horaInicio, fechaReserva.minusDays(1))
-				|| reservaRepository.existsByHoraFinAndFechaReserva(horaFin, fechaReserva.plusDays(1));
+		return reservaRepository.existsByHoraInicioAndFecha(horaInicio, Fecha.minusDays(1))
+				|| reservaRepository.existsByHoraFinAndFecha(horaFin, Fecha.plusDays(1));
 	}
 
 	public boolean existeReservaEnIntervaloParaHora(LocalTime horaInicio, LocalTime horaFin) {

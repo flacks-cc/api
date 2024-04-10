@@ -1,11 +1,9 @@
 package com.tutorial.crud.security.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import com.tutorial.crud.entity.MensajeContacto;
 
-@Repository
-public interface MensajeContactoRepository extends JpaRepository<MensajeContacto, Integer> {
-    boolean existsByFechaMensaje(String fechaMensaje);
+public interface MensajeContactoRepository extends JpaRepository<MensajeContacto, Long> {
+
+	boolean existsByFechaHora(String fechaHora);
 }

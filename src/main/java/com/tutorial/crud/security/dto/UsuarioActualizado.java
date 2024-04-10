@@ -1,95 +1,117 @@
 package com.tutorial.crud.security.dto;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.tutorial.crud.security.entity.Rol;
 
 public class UsuarioActualizado {
 
-private String nombre;
-private String apellidoPaterno;
-private String apellidoMaterno;
-private String telefono;
-private String nombreUsuario;
-private String email;
-private String password;
-private List<String> roles; // Puedes usar una lista para los roles
+	private Integer idUsuario;
 
-// Constructor, getters y setters aquí (según tus necesidades)
+	private String nombreUsuario;
 
-// Ejemplo de constructor
-public UsuarioActualizado(String nombre, String apellidoPaterno, String apellidoMaterno,
-                         String telefono, String nombreUsuario, String email, String password,
-                         List<String> roles) {
-    this.nombre = nombre;
-    this.apellidoPaterno = apellidoPaterno;
-    this.apellidoMaterno = apellidoMaterno;
-    this.telefono = telefono;
-    this.nombreUsuario = nombreUsuario;
-    this.email = email;
-    this.password = password;
-    this.roles = roles;
-}
+	private String nombre;
 
-public String getNombre() {
-	return nombre;
-}
+	private String apellidoPaterno;
 
-public void setNombre(String nombre) {
-	this.nombre = nombre;
-}
+	private String apellidoMaterno;
 
-public String getApellidoPaterno() {
-	return apellidoPaterno;
-}
+	private String email;
 
-public void setApellidoPaterno(String apellidoPaterno) {
-	this.apellidoPaterno = apellidoPaterno;
-}
+	private String password;
 
-public String getApellidoMaterno() {
-	return apellidoMaterno;
-}
+	private String telefono;
 
-public void setApellidoMaterno(String apellidoMaterno) {
-	this.apellidoMaterno = apellidoMaterno;
-}
+	private Set<Rol> roles = new HashSet<>();
 
-public String getTelefono() {
-	return telefono;
-}
+	// Constructor vacío
+	public UsuarioActualizado() {
+	}
 
-public void setTelefono(String telefono) {
-	this.telefono = telefono;
-}
+	// Constructor
+	public UsuarioActualizado(Integer idUsuario, String nombreUsuario, String nombre, String apellidoPaterno,
+			String apellidoMaterno, String email, String password, String telefono) {
+		this.idUsuario = idUsuario;
+		this.nombreUsuario = nombreUsuario;
+		this.nombre = nombre;
+		this.apellidoPaterno = apellidoPaterno;
+		this.apellidoMaterno = apellidoMaterno;
+		this.email = email;
+		this.password = password;
+		this.telefono = telefono;
+	}
 
-public String getNombreUsuario() {
-	return nombreUsuario;
-}
+	// Getters y Setters
+	public Integer getIdUsuario() {
+		return idUsuario;
+	}
 
-public void setNombreUsuario(String nombreUsuario) {
-	this.nombreUsuario = nombreUsuario;
-}
+	public void setIdUsuario(Integer idUsuario) {
+		this.idUsuario = idUsuario;
+	}
 
-public String getEmail() {
-	return email;
-}
+	public String getNombreUsuario() {
+		return nombreUsuario;
+	}
 
-public void setEmail(String email) {
-	this.email = email;
-}
+	public void setNombreUsuario(String nombreUsuario) {
+		this.nombreUsuario = nombreUsuario;
+	}
 
-public String getPassword() {
-	return password;
-}
+	public String getNombre() {
+		return nombre;
+	}
 
-public void setPassword(String password) {
-	this.password = password;
-}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-public List<String> getRoles() {
-	return roles;
-}
+	public String getApellidoPaterno() {
+		return apellidoPaterno;
+	}
 
-public void setRoles(List<String> roles) {
-	this.roles = roles;
-}
+	public void setApellidoPaterno(String apellidoPaterno) {
+		this.apellidoPaterno = apellidoPaterno;
+	}
+
+	public String getApellidoMaterno() {
+		return apellidoMaterno;
+	}
+
+	public void setApellidoMaterno(String apellidoMaterno) {
+		this.apellidoMaterno = apellidoMaterno;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getTelefono() {
+		return telefono;
+	}
+
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+
+	public Set<Rol> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Rol> roles) {
+		this.roles = roles;
+	}
 }

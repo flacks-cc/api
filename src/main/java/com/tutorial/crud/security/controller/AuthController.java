@@ -49,160 +49,168 @@ import com.tutorial.crud.security.service.UsuarioService;
 @CrossOrigin
 public class AuthController {
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+	@Autowired
+	AuthenticationManager authenticationManager;
 
-    @Autowired
-    UsuarioService usuarioService;
+	@Autowired
+	UsuarioService usuarioService;
 
-    @Autowired
-    RolService rolService;
+	@Autowired
+	RolService rolService;
 
-    @Autowired
-    JwtProvider jwtProvider;
+	@Autowired
+	JwtProvider jwtProvider;
 
-    @PostMapping("/nuevo")
-    public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
-        if (bindingResult.hasErrors())
-            return new ResponseEntity(new Mensaje("Campos incorrectos o email invalido"), HttpStatus.BAD_REQUEST);
-        if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
-            return new ResponseEntity(new Mensaje("Este usuario ya existe"), HttpStatus.BAD_REQUEST);
-        if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-            return new ResponseEntity(new Mensaje("Este email ya existe"), HttpStatus.BAD_REQUEST);
-        if (usuarioService.existsByTelefono(nuevoUsuario.getTelefono())) // Verificar si el teléfono ya existe
-            return new ResponseEntity(new Mensaje("Este teléfono ya existe"), HttpStatus.BAD_REQUEST);
-        
-        Usuario usuario = new Usuario(nuevoUsuario.getNombre(), nuevoUsuario.getApellidoPaterno(), nuevoUsuario.getApellidoMaterno(),
-        		nuevoUsuario.getTelefono(),nuevoUsuario.getNombreUsuario(), nuevoUsuario.getEmail(), passwordEncoder.encode(nuevoUsuario.getPassword()));
-        
-        Set<Rol> roles = new HashSet<>();
-        roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
-        if (nuevoUsuario.getRoles().contains("admin"))
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
-        if (nuevoUsuario.getRoles().contains("empleado"))
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_EMPLEADO).get());
-        
-        usuario.setRoles(roles);
-        usuarioService.save(usuario);
-        
-        return new ResponseEntity(new Mensaje("Usuario guardado"), HttpStatus.CREATED);
-    }
-    
-    @PostMapping("/login")
-    public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult) {
-        if (bindingResult.hasErrors())
-            return new ResponseEntity(new Mensaje("Campos incorrectos"), HttpStatus.BAD_REQUEST);
-                Authentication authentication = null;
-        try {
-            Usuario usuario = usuarioService.getByNombreUsuarioOrEmail(loginUsuario.getNombreUsuario(), loginUsuario.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("No se ha encontrado un usuario con ese nombre de usuario o correo electrónico"));
-            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(usuario.getNombreUsuario(), loginUsuario.getPassword()));
-        } catch (BadCredentialsException e) {
-            return new ResponseEntity(new Mensaje("Nombre de usuario o correo electrónico y/o contraseña incorrectos"), HttpStatus.BAD_REQUEST);
-        }
-        
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UsuarioPrincipal userDetails = (UsuarioPrincipal) authentication.getPrincipal();
-        String jwt = jwtProvider.generateToken(authentication);
-        JwtDto jwtDto = new JwtDto(jwt, userDetails.getUsername(), userDetails.getEmail(), userDetails.getAuthorities());
-        return new ResponseEntity(jwtDto, HttpStatus.OK);
-    }
-    
+	@PostMapping("/nuevo")
+	public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
+		if (bindingResult.hasErrors())
+			return new ResponseEntity(new Mensaje("Campos incorrectos o email invalido"), HttpStatus.BAD_REQUEST);
+		if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
+			return new ResponseEntity(new Mensaje("Este usuario ya existe"), HttpStatus.BAD_REQUEST);
+		if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
+			return new ResponseEntity(new Mensaje("Este email ya existe"), HttpStatus.BAD_REQUEST);
+		if (usuarioService.existsByTelefono(nuevoUsuario.getTelefono())) // Verificar si el teléfono ya existe
+			return new ResponseEntity(new Mensaje("Este teléfono ya existe"), HttpStatus.BAD_REQUEST);
 
-    @PutMapping("/usuarios/{id}")
-    public ResponseEntity<?> actualizarUsuario(@PathVariable int id, @Valid @RequestBody UsuarioActualizado usuarioActualizado, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity<>(new Mensaje("Campos incorrectos o email inválido"), HttpStatus.BAD_REQUEST);
-        }
+		Usuario usuario = new Usuario(nuevoUsuario.getNombre(), nuevoUsuario.getApellidoPaterno(),
+				nuevoUsuario.getApellidoMaterno(), nuevoUsuario.getTelefono(), nuevoUsuario.getNombreUsuario(),
+				nuevoUsuario.getEmail(), passwordEncoder.encode(nuevoUsuario.getPassword()));
 
-        Optional<Usuario> usuarioExistente = usuarioService.findById(id);
-        if (!usuarioExistente.isPresent()) {
-            return new ResponseEntity<>(new Mensaje("Usuario no encontrado"), HttpStatus.NOT_FOUND);
-        }
+		Set<Rol> roles = new HashSet<>();
+		roles.add(rolService.getByNombre(RolNombre.ROLE_USER).get());
+		if (nuevoUsuario.getRoles().contains("admin"))
+			roles.add(rolService.getByNombre(RolNombre.ROLE_ADMIN).get());
+		if (nuevoUsuario.getRoles().contains("empleado"))
+			roles.add(rolService.getByNombre(RolNombre.ROLE_EMPLEADO).get());
 
-        Usuario usuario = usuarioExistente.get();
+		usuario.setRoles(roles);
+		usuarioService.save(usuario);
 
-        // Verificar si el correo, contraseña y teléfono son iguales a los actuales
-        if (usuarioActualizado.getEmail().equals(usuario.getEmail()) &&
-            usuarioActualizado.getPassword().equals(usuario.getPassword()) &&
-            usuarioActualizado.getTelefono().equals(usuario.getTelefono())) {
-            // Si son iguales, no se realiza ninguna validación adicional
-        } else {
-            // Verificar si ya existen en la base de datos
-            if (usuarioService.existsByTelefonoAndIdNot(usuarioActualizado.getTelefono(), id)) {
-                return new ResponseEntity<>(new Mensaje("Este número de teléfono ya está en uso"), HttpStatus.BAD_REQUEST);
-            }
+		return new ResponseEntity(new Mensaje("Usuario guardado"), HttpStatus.CREATED);
+	}
 
-            if (usuarioService.existsByEmailAndIdNot(usuarioActualizado.getEmail(), id)) {
-                return new ResponseEntity<>(new Mensaje("Este correo electrónico ya está en uso"), HttpStatus.BAD_REQUEST);
-            }
-        }
+	@PostMapping("/login")
+	public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult) {
+		if (bindingResult.hasErrors())
+			return new ResponseEntity(new Mensaje("Campos incorrectos"), HttpStatus.BAD_REQUEST);
+		Authentication authentication = null;
+		try {
+			Usuario usuario = usuarioService
+					.getByNombreUsuarioOrEmail(loginUsuario.getNombreUsuario(), loginUsuario.getEmail())
+					.orElseThrow(() -> new UsernameNotFoundException(
+							"No se ha encontrado un usuario con ese nombre de usuario o correo electrónico"));
+			authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(usuario.getNombreUsuario(), loginUsuario.getPassword()));
+		} catch (BadCredentialsException e) {
+			return new ResponseEntity(new Mensaje("Nombre de usuario o correo electrónico y/o contraseña incorrectos"),
+					HttpStatus.BAD_REQUEST);
+		}
 
-        if (usuarioService.existsByNombreUsuarioAndIdNot(usuarioActualizado.getNombreUsuario(), id)) {
-            return new ResponseEntity<>(new Mensaje("Este nombre de usuario ya está en uso"), HttpStatus.BAD_REQUEST);
-        }
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		UsuarioPrincipal userDetails = (UsuarioPrincipal) authentication.getPrincipal();
+		String jwt = jwtProvider.generateToken(authentication);
+		JwtDto jwtDto = new JwtDto(jwt, userDetails.getUsername(), userDetails.getEmail(),
+				userDetails.getAuthorities());
+		return new ResponseEntity(jwtDto, HttpStatus.OK);
+	}
 
-        usuario.setNombre(usuarioActualizado.getNombre());
-        usuario.setApellidoPaterno(usuarioActualizado.getApellidoPaterno());
-        usuario.setApellidoMaterno(usuarioActualizado.getApellidoMaterno());
-        usuario.setTelefono(usuarioActualizado.getTelefono());
-        usuario.setNombreUsuario(usuarioActualizado.getNombreUsuario());
-        usuario.setEmail(usuarioActualizado.getEmail());
-        usuario.setPassword(passwordEncoder.encode(usuarioActualizado.getPassword()));
+	@PutMapping("/usuarios/{idUsuario}")
+	public ResponseEntity<?> actualizarUsuario(@PathVariable Long idUsuario,
+			@Valid @RequestBody UsuarioActualizado usuarioActualizado, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return new ResponseEntity<>(new Mensaje("Campos incorrectos o email inválido"), HttpStatus.BAD_REQUEST);
+		}
 
-        // Actualiza los roles del usuario si es necesario
-        Set<Rol> roles = new HashSet<>();
-        if (usuarioActualizado.getRoles().contains("admin")) {
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
-        }
-        if (usuarioActualizado.getRoles().contains("empleado")) {
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_EMPLEADO).get());
-        }
-        usuario.setRoles(roles);
+		Optional<Usuario> usuarioExistente = usuarioService.findById(idUsuario);
+		if (!usuarioExistente.isPresent()) {
+			return new ResponseEntity<>(new Mensaje("Usuario no encontrado"), HttpStatus.NOT_FOUND);
+		}
 
-        usuarioService.save(usuario);
+		Usuario usuario = usuarioExistente.get();
 
-        return new ResponseEntity<>(new Mensaje("Usuario actualizado"), HttpStatus.OK);
-    }
+		// Verificar si el correo, contraseña y teléfono son iguales a los actuales
+		if (usuarioActualizado.getEmail().equals(usuario.getEmail())
+				&& usuarioActualizado.getPassword().equals(usuario.getPassword())
+				&& usuarioActualizado.getTelefono().equals(usuario.getTelefono())) {
+			// Si son iguales, no se realiza ninguna validación adicional
+		} else {
+			// Verificar si ya existen en la base de datos
+			if (usuarioService.existsByTelefonoAndIdUsuarioNot(usuarioActualizado.getTelefono(), idUsuario)) {
+				return new ResponseEntity<>(new Mensaje("Este número de teléfono ya está en uso"),
+						HttpStatus.BAD_REQUEST);
+			}
 
+			if (usuarioService.existsByEmailAndIdUsuarioNot(usuarioActualizado.getEmail(), idUsuario)) {
+				return new ResponseEntity<>(new Mensaje("Este correo electrónico ya está en uso"),
+						HttpStatus.BAD_REQUEST);
+			}
+		}
 
-    // Método para borrar un usuario
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/usuarios/{id}")
-    public ResponseEntity<?> borrarUsuario(@PathVariable("id") int id) {
-        // Verificar si el usuario con el ID proporcionado existe
-        if (!usuarioService.existsById(id)) {
-            return new ResponseEntity<>(new Mensaje("No se encontró un usuario con el ID proporcionado"), HttpStatus.NOT_FOUND);
-        }
+		if (usuarioService.existsByNombreUsuarioAndIdUsuarioNot(usuarioActualizado.getNombreUsuario(), idUsuario)) {
+			return new ResponseEntity<>(new Mensaje("Este nombre de usuario ya está en uso"), HttpStatus.BAD_REQUEST);
+		}
 
-        // Borrar el usuario de la base de datos
-        usuarioService.deleteById(id);
+		usuario.setNombre(usuarioActualizado.getNombre());
+		usuario.setApellidoPaterno(usuarioActualizado.getApellidoPaterno());
+		usuario.setApellidoMaterno(usuarioActualizado.getApellidoMaterno());
+		usuario.setTelefono(usuarioActualizado.getTelefono());
+		usuario.setNombreUsuario(usuarioActualizado.getNombreUsuario());
+		usuario.setEmail(usuarioActualizado.getEmail());
+		usuario.setPassword(passwordEncoder.encode(usuarioActualizado.getPassword()));
 
-        return new ResponseEntity<>(new Mensaje("Usuario eliminado correctamente"), HttpStatus.OK);
-    }
+		// Actualiza los roles del usuario si es necesario
+		Set<Rol> roles = new HashSet<>();
+		if (usuarioActualizado.getRoles().contains("admin")) {
+			roles.add(rolService.getByNombre(RolNombre.ROLE_ADMIN).get());
+		}
+		if (usuarioActualizado.getRoles().contains("empleado")) {
+			roles.add(rolService.getByNombre(RolNombre.ROLE_EMPLEADO).get());
+		}
+		usuario.setRoles(roles);
 
-    // Método para listar todos los usuarios
-    @GetMapping("/usuarios")
-    public ResponseEntity<List<Usuario>> listarUsuarios() {
-        List<Usuario> usuarios = usuarioService.findAll();
-        return new ResponseEntity<>(usuarios, HttpStatus.OK);
-    }
+		usuarioService.save(usuario);
 
-    // Método para obtener un usuario por su ID
-    @GetMapping("/usuarios/{id}")
-    public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable("id") int id) {
-        // Verificar si el usuario con el ID proporcionado existe
-        Optional<Usuario> usuarioOptional = usuarioService.findById(id);
-        if (!usuarioOptional.isPresent()) {
-            return new ResponseEntity<>(new Mensaje("No se encontró un usuario con el ID proporcionado"), HttpStatus.NOT_FOUND);
-        }
+		return new ResponseEntity<>(new Mensaje("Usuario actualizado"), HttpStatus.OK);
+	}
 
-        // Devolver el usuario encontrado
-        Usuario usuario = usuarioOptional.get();
-        return new ResponseEntity<>(usuario, HttpStatus.OK);
-    }
+	// Método para borrar un usuario
+	@PreAuthorize("hasRole('ADMIN')")
+	@DeleteMapping("/usuarios/{idUsuario}")
+	public ResponseEntity<?> borrarUsuario(@PathVariable("idUsuario") Long idUsuario) {
+		// Verificar si el usuario con el ID proporcionado existe
+		if (!usuarioService.existsById(idUsuario)) {
+			return new ResponseEntity<>(new Mensaje("No se encontró un usuario con el ID proporcionado"),
+					HttpStatus.NOT_FOUND);
+		}
+
+		// Borrar el usuario de la base de datos
+		usuarioService.deleteById(idUsuario);
+
+		return new ResponseEntity<>(new Mensaje("Usuario eliminado correctamente"), HttpStatus.OK);
+	}
+
+	// Método para listar todos los usuarios
+	@GetMapping("/usuarios")
+	public ResponseEntity<List<Usuario>> listarUsuarios() {
+		List<Usuario> usuarios = usuarioService.findAll();
+		return new ResponseEntity<>(usuarios, HttpStatus.OK);
+	}
+
+	// Método para obtener un usuario por su ID
+	@GetMapping("/usuarios/{idUsuario}")
+	public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable("idUsuario") Long idUsuario) {
+		// Verificar si el usuario con el ID proporcionado existe
+		Optional<Usuario> usuarioOptional = usuarioService.findById(idUsuario);
+		if (!usuarioOptional.isPresent()) {
+			return new ResponseEntity<>(new Mensaje("No se encontró un usuario con el ID proporcionado"),
+					HttpStatus.NOT_FOUND);
+		}
+
+		// Devolver el usuario encontrado
+		Usuario usuario = usuarioOptional.get();
+		return new ResponseEntity<>(usuario, HttpStatus.OK);
+	}
 }
-

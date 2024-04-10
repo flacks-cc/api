@@ -2,39 +2,48 @@ package com.tutorial.crud.dto;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotNull;
-
-import com.tutorial.crud.entity.Producto;
-import com.tutorial.crud.entity.Servicio;
-import com.tutorial.crud.security.entity.Usuario;
-
 public class ResenaDto {
 
-    private Integer id;
+	private Integer idResena;
 
-    private String mensaje;
-    
-    private Integer valoracion;
+	private String mensaje;
 
-    private LocalDateTime fechaResena;
+	private Integer valoracion;
 
-    @NotNull(message = "El id de usuario debe ser ingresado y no puede ser nulo")
-    private Integer idUsuario;
+	private LocalDateTime fechaHora;
 
-    private Integer idServicio;
-    
-    private Integer idProducto;
+	private Integer idCliente;
 
-	private Servicio servicio;
+	private Integer idProducto;
 
-	private Usuario usuario;
+	private Integer idServicio;
 
-	private Producto producto;
+	// Constructor vacio
+	public ResenaDto() {
+	}
 
-    public ResenaDto() {
-    }
-    
- public String getMensaje() {
+	// Constructor
+	public ResenaDto(Integer idResena, String mensaje, Integer valoracion, LocalDateTime fechaHora, Integer idCliente,
+			Integer idProducto, Integer idServicio) {
+		this.idResena = idResena;
+		this.mensaje = mensaje;
+		this.valoracion = valoracion;
+		this.fechaHora = fechaHora;
+		this.idCliente = idCliente;
+		this.idProducto = idProducto;
+		this.idServicio = idServicio;
+	}
+
+	// Getters y Setters
+	public Integer getIdResena() {
+		return idResena;
+	}
+
+	public void setIdResena(Integer idResena) {
+		this.idResena = idResena;
+	}
+
+	public String getMensaje() {
 		return mensaje;
 	}
 
@@ -50,28 +59,20 @@ public class ResenaDto {
 		this.valoracion = valoracion;
 	}
 
-	public LocalDateTime getFechaResena() {
-		return fechaResena;
+	public LocalDateTime getFechaHora() {
+		return fechaHora;
 	}
 
-	public void setFechaResena(LocalDateTime fechaResena) {
-		this.fechaResena = fechaResena;
+	public void setFechaHora(LocalDateTime fechaHora) {
+		this.fechaHora = fechaHora;
 	}
 
-	public Integer getIdUsuario() {
-		return idUsuario;
+	public Integer getIdCliente() {
+		return idCliente;
 	}
 
-	public void setIdUsuario(Integer idUsuario) {
-		this.idUsuario = idUsuario;
-	}
-
-	public Integer getIdServicio() {
-		return idServicio;
-	}
-
-	public void setIdServicio(Integer idServicio) {
-		this.idServicio = idServicio;
+	public void setIdCliente(Integer idCliente) {
+		this.idCliente = idCliente;
 	}
 
 	public Integer getIdProducto() {
@@ -82,58 +83,11 @@ public class ResenaDto {
 		this.idProducto = idProducto;
 	}
 
-	public Servicio getServicio() {
-		return servicio;
+	public Integer getIdServicio() {
+		return idServicio;
 	}
 
-	public void setServicio(Servicio servicio) {
-		this.servicio = servicio;
+	public void setIdServicio(Integer idServicio) {
+		this.idServicio = idServicio;
 	}
-
-	public Usuario getUsuario() {
-		return usuario;
-	}
-
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
-
-	public Producto getProducto() {
-		return producto;
-	}
-
-	public void setProducto(Producto producto) {
-		this.producto = producto;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	// Constructor con Usuario, Servicio y Producto
-    public ResenaDto(Integer id, String mensaje, Integer valoracion, LocalDateTime fechaResena, Servicio servicio, Usuario usuario, Producto producto) {
-    	this.id = id;
-    	this.mensaje = mensaje;
-        this.valoracion = valoracion;
-        this.fechaResena = fechaResena;
-        
-        if (usuario != null) {
-            this.idUsuario = usuario.getId();
-            this.usuario = usuario;
-        }
-        
-        if (servicio != null) {
-            this.idServicio = servicio.getId();
-            this.servicio = servicio;
-        }
-        
-        if (producto != null) {
-            this.idProducto = producto.getId();
-            this.producto = producto;
-        }
-    }
 }

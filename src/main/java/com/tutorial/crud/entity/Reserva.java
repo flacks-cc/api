@@ -28,7 +28,7 @@ public class Reserva {
 	private LocalTime horaInicio;
 
 	@NotNull(message = "La hora de fin no puede ser nula")
-	@Column(name = "hora_fin", nullable = true)
+	@Column(name = "hora_fin", nullable = false)
 	private LocalTime horaFin;
 
 	@NotNull(message = "El estado de la reserva no puede ser nulo")

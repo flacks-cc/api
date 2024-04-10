@@ -9,20 +9,20 @@ import org.springframework.stereotype.Service;
 
 import com.tutorial.crud.security.entity.Rol;
 import com.tutorial.crud.security.enums.RolNombre;
-import com.tutorial.crud.security.repository.RolRepository;
+import com.tutorial.crud.security.repository.RolesRepository;
 
 @Service
 @Transactional
 public class RolService {
 
     @Autowired
-    RolRepository rolRepository;
+    RolesRepository rolesRepository;
 
-    public Optional<Rol> getByRolNombre(RolNombre rolNombre) {
-        return rolRepository.findByRolNombre(rolNombre);
+    public Optional<Rol> getByNombre(RolNombre nombre) {
+        return rolesRepository.findByNombre(nombre);
     }
 
     public void save(Rol rol) {
-        rolRepository.save(rol);
+        rolesRepository.save(rol);
     }
 }

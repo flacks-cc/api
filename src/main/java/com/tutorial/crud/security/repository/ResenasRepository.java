@@ -1,11 +1,10 @@
 package com.tutorial.crud.security.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import com.tutorial.crud.entity.Resena;
 
-import com.tutorial.crud.entity.Resenas;
+public interface ResenasRepository extends JpaRepository<Resena, Long> {
 
-@Repository
-public interface ResenaRepository extends JpaRepository<Resenas, Integer> {
-    boolean existsByFechaResena(String fechaResena);
+	boolean existsByFechaHora(String fechaHora);
+
 }

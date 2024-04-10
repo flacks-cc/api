@@ -15,7 +15,7 @@ public class Producto {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "idProducto")
+	@Column(name = "id_producto")
 	private Long idProducto;
 
 	@NotNull(message = "El nombre no puede ser nulo")

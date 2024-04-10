@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.tutorial.crud.entity.MensajeContacto;
 import com.tutorial.crud.security.repository.MensajeContactoRepository;
 
@@ -18,31 +17,27 @@ public class MensajeContactoService {
     @Autowired
     private MensajeContactoRepository mensajeContactoRepository;
 
-    public List<MensajeContacto> list(){
+    public List<MensajeContacto> findAll(){
         return mensajeContactoRepository.findAll();
     }
 
-    public Optional<MensajeContacto> getOne(int id){
-        return mensajeContactoRepository.findById(id);
-    }
-    
-    public Optional<MensajeContacto> findById(int id) {
-        return mensajeContactoRepository.findById(id);
+    public Optional<MensajeContacto> findById(Long idMensaje) {
+        return mensajeContactoRepository.findById(idMensaje);
     }
 
-    public void save(MensajeContacto mensajeContacto){
-    	mensajeContactoRepository.save(mensajeContacto);
+    public void save(MensajeContacto mensaje){
+    	mensajeContactoRepository.save(mensaje);
     }
 
-    public void delete(int id){
-    	mensajeContactoRepository.deleteById(id);
+    public void deleteById(Long idMensaje){
+    	mensajeContactoRepository.deleteById(idMensaje);
     }
 
-    public boolean existsById(int id){
-        return mensajeContactoRepository.existsById(id);
+    public boolean existsById(Long idMensaje){
+        return mensajeContactoRepository.existsById(idMensaje);
     }
 
-    public boolean existsByFechaMensaje(String fechaMensaje){
-        return mensajeContactoRepository.existsByFechaMensaje(fechaMensaje);
+    public boolean existsByFechaHora(String fechaHora){
+        return mensajeContactoRepository.existsByFechaHora(fechaHora);
     }
 }

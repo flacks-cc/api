@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.tutorial.crud.dto.DetalleProductoDto.ProductoDetailsDTO;
 import com.tutorial.crud.dto.TicketDto.TicketDetailsDTO;
 import com.tutorial.crud.entity.DetalleProducto;
@@ -16,7 +15,6 @@ import com.tutorial.crud.entity.Reserva;
 import com.tutorial.crud.entity.Ticket;
 import com.tutorial.crud.security.entity.Usuario;
 import com.tutorial.crud.security.repository.TicketRepository;
-import com.tutorial.crud.security.service.UsuarioService;
 
 @Service
 @Transactional
@@ -27,15 +25,6 @@ public class TicketService {
 
     @Autowired
     private ReservaService reservaService;
-
-    @Autowired
-    private MetodoPagoService metodoPagoService;
-
-    @Autowired
-    private UsuarioService usuarioService;
-
-    @Autowired
-    private ProductoService productoService;
 
 	// Lista todos los tickets en la base de datos
 	public List<Ticket> findAll() {
@@ -67,11 +56,6 @@ public class TicketService {
 	    return ticketRepository.existsById(idTicket);
 	}
 
-	// Verifica si un ticket existe por su nombre
-	public boolean existsByNombre(String nombre) {
-	    return ticketRepository.existsByNombre(nombre);
-	}
-	
 	public Ticket getTicketDetails(Long idTicket) {
         Ticket ticket = ticketRepository.findById(idTicket).orElse(null);
         if (ticket == null) {
@@ -88,7 +72,7 @@ public class TicketService {
         // Obtener el nombre del método de pago
         MetodoPago metodoPago = ticket.getMetodoPago();
         if (metodoPago != null) {
-            ticketDetailsDTO.setMetodoPago(metodoPago.getMetodoNombre());
+            ticketDetailsDTO.setMetodoPago(metodoPago.getNombre());
         }
 
         // Obtener el nombre completo del empleado

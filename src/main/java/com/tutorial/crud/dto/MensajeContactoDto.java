@@ -2,86 +2,81 @@ package com.tutorial.crud.dto;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotNull;
-
-import com.tutorial.crud.security.entity.Usuario;
-
 public class MensajeContactoDto {
 
-    private String asunto;
-    private String mensaje;
-    private String adjunto;
+	private Integer idMensaje;
 
-    private LocalDateTime fechaMensaje;
+	private String asunto;
 
-    @NotNull(message = "El id de usuario debe ser ingresado y no puede ser nulo")
-    private int idUsuario;
+	private String mensaje;
 
-    private Usuario usuario;
+	private String adjunto;
 
-    public MensajeContactoDto() {
-    }
+	private LocalDateTime fechaHora;
 
-    // Constructor con Usuario
-    public MensajeContactoDto(String asunto, String mensaje, String adjunto, LocalDateTime fechaMensaje, Usuario usuario) {
-        this.asunto = asunto;
-        this.mensaje = mensaje;
-        this.adjunto = adjunto;
-        this.fechaMensaje = fechaMensaje;
+	private Integer idCliente;
 
-        if (usuario != null) {
-            this.idUsuario = usuario.getId();
-            this.usuario = usuario;
-        }
-    }
-    
-    // Getters y Setters
+	// Constructor vacío
+	public MensajeContactoDto() {
+	}
 
-    public String getAsunto() {
-        return asunto;
-    }
+	// Constructor
+	public MensajeContactoDto(Integer idMensaje, String asunto, String mensaje, String adjunto, LocalDateTime fechaHora,
+			Integer idCliente) {
+		this.idMensaje = idMensaje;
+		this.asunto = asunto;
+		this.mensaje = mensaje;
+		this.adjunto = adjunto;
+		this.fechaHora = fechaHora;
+		this.idCliente = idCliente;
+	}
 
-    public void setAsunto(String asunto) {
-        this.asunto = asunto;
-    }
+	// Getters y Setters
+	public Integer getIdMensaje() {
+		return idMensaje;
+	}
 
-    public String getMensaje() {
-        return mensaje;
-    }
+	public void setIdMensaje(Integer idMensaje) {
+		this.idMensaje = idMensaje;
+	}
 
-    public void setMensaje(String mensaje) {
-        this.mensaje = mensaje;
-    }
+	public String getAsunto() {
+		return asunto;
+	}
 
-    public String getAdjunto() {
-        return adjunto;
-    }
+	public void setAsunto(String asunto) {
+		this.asunto = asunto;
+	}
 
-    public void setAdjunto(String adjunto) {
-        this.adjunto = adjunto;
-    }
+	public String getMensaje() {
+		return mensaje;
+	}
 
-    public LocalDateTime getFechaMensaje() {
-        return fechaMensaje;
-    }
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
+	}
 
-    public void setFechaMensaje(LocalDateTime fechaMensaje) {
-        this.fechaMensaje = fechaMensaje;
-    }
+	public String getAdjunto() {
+		return adjunto;
+	}
 
-    public int getIdUsuario() {
-        return idUsuario;
-    }
+	public void setAdjunto(String adjunto) {
+		this.adjunto = adjunto;
+	}
 
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
-    }
+	public LocalDateTime getFechaHora() {
+		return fechaHora;
+	}
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
+	public void setFechaHora(LocalDateTime fechaHora) {
+		this.fechaHora = fechaHora;
+	}
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
+	public Integer getIdCliente() {
+		return idCliente;
+	}
+
+	public void setIdCliente(Integer idCliente) {
+		this.idCliente = idCliente;
+	}
 }

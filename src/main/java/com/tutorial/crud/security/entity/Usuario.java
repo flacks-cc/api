@@ -1,13 +1,20 @@
 package com.tutorial.crud.security.entity;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -17,7 +24,7 @@ public class Usuario {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_usuario")
-	private Integer idUsuario;
+	private Long idUsuario;
 
 	@NotBlank
 	@Column(name = "nombre_usuario", unique = true, nullable = false, length = 50)
@@ -39,18 +46,23 @@ public class Usuario {
 
 	@NotBlank
 	@Email
-	@Column(name = "correo_electronico", unique = true, nullable = false, length = 100)
-	private String correo;
+	@Column(name = "email", unique = true, nullable = false, length = 100)
+	private String email;
 
 	@NotBlank
 	@Size(max = 255)
-	@Column(name = "contrasena", nullable = false, length = 255)
-	private String contrasena;
+	@Column(name = "password", nullable = false, length = 255)
+	private String password;
 
 	@NotBlank
 	@Size(min = 10, max = 10)
-	@Column(name = "numero_telefono", unique = true, nullable = false, length = 10)
+	@Column(name = "telefono", unique = true, nullable = false, length = 10)
 	private String telefono;
+
+	@NotNull
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_rol"))
+	private Set<Rol> roles = new HashSet<>();
 
 	// Constructor vacío
 	public Usuario() {
@@ -58,22 +70,22 @@ public class Usuario {
 
 	// Constructor con todos los campos
 	public Usuario(String nombreUsuario, String nombre, String apellidoPaterno, String apellidoMaterno,
-			String correoElectronico, String contrasena, String numeroTelefono) {
+			String email, String password, String numeroTelefono) {
 		this.nombreUsuario = nombreUsuario;
 		this.nombre = nombre;
 		this.apellidoPaterno = apellidoPaterno;
 		this.apellidoMaterno = apellidoMaterno;
-		this.correo = correoElectronico;
-		this.contrasena = contrasena;
+		this.email = email;
+		this.password = password;
 		this.telefono = numeroTelefono;
 	}
 
 	// Getters y setters
-	public Integer getIdUsuario() {
+	public Long getIdUsuario() {
 		return idUsuario;
 	}
 
-	public void setIdUsuario(Integer idUsuario) {
+	public void setIdUsuario(Long idUsuario) {
 		this.idUsuario = idUsuario;
 	}
 
@@ -109,28 +121,36 @@ public class Usuario {
 		this.apellidoMaterno = apellidoMaterno;
 	}
 
-	public String getCorreoElectronico() {
-		return correo;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setCorreoElectronico(String correoElectronico) {
-		this.correo = correoElectronico;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	public String getContrasena() {
-		return contrasena;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setContrasena(String contrasena) {
-		this.contrasena = contrasena;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public String getNumeroTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
 
-	public void setNumeroTelefono(String numeroTelefono) {
+	public void setTelefono(String numeroTelefono) {
 		this.telefono = numeroTelefono;
+	}
+
+	public Set<Rol> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Rol> roles) {
+		this.roles = roles;
 	}
 
 	// Método toString
@@ -138,7 +158,8 @@ public class Usuario {
 	public String toString() {
 		return "Usuario{" + "idUsuario=" + idUsuario + ", nombreUsuario='" + nombreUsuario + '\'' + ", nombre='"
 				+ nombre + '\'' + ", apellidoPaterno='" + apellidoPaterno + '\'' + ", apellidoMaterno='"
-				+ apellidoMaterno + '\'' + ", correoElectronico='" + correo + '\'' + ", contrasena='" + contrasena
-				+ '\'' + ", numeroTelefono='" + telefono + '}';
+				+ apellidoMaterno + '\'' + ", email='" + email + '\'' + ", password='"
+				+ password + '\'' + ", numeroTelefono='" + telefono + '}';
 	}
+
 }
