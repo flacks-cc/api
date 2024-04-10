@@ -201,7 +201,7 @@ public class ReservaController {
 		}
 
 		// Obtener el usuario empleado a partir del ID proporcionado
-		Optional<Usuario> usuarioEmpleadoOptional = usuarioService.findById(reservaDto.getEmpleado().getIdUsuario);
+		Optional<Usuario> usuarioEmpleadoOptional = usuarioService.findById(reservaDto.getEmpleado().getIdUsuario());
 		if (!usuarioEmpleadoOptional.isPresent()) {
 			return ResponseEntity.badRequest().body(new Mensaje("El usuario especificado no existe"));
 		}
