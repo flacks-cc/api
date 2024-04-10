@@ -7,42 +7,41 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.tutorial.crud.entity.Contacto;
-import com.tutorial.crud.security.repository.ContactoRepository;
+import com.tutorial.crud.entity.Mensaje_Contacto;
+import com.tutorial.crud.security.repository.Mensajes_ContactoRepository;
 
 @Service
 @Transactional
-public class ContactoService {
+public class Mensaje_ContactoService {
 
     @Autowired
-    private ContactoRepository contactoRepository;
+    private Mensajes_ContactoRepository mensajes_ContactoRepository;
 
-    public List<Contacto> list(){
-        return contactoRepository.findAll();
+    public List<Mensaje_Contacto> list(){
+        return mensajes_ContactoRepository.findAll();
     }
 
-    public Optional<Contacto> getOne(int id){
-        return contactoRepository.findById(id);
+    public Optional<Mensaje_Contacto> getOne(int idMensaje){
+        return mensajes_ContactoRepository.findById(idMensaje);
     }
     
-    public Optional<Contacto> findById(int id) {
-        return contactoRepository.findById(id);
+    public Optional<Mensaje_Contacto> findById(int idMensaje) {
+        return mensajes_ContactoRepository.findById(idMensaje);
     }
 
-    public void save(Contacto contacto){
-    	contactoRepository.save(contacto);
+    public void save(Mensaje_Contacto mensaje){
+    	mensajes_ContactoRepository.save(mensaje);
     }
 
-    public void delete(int id){
-    	contactoRepository.deleteById(id);
+    public void delete(int idMensaje){
+    	mensajes_ContactoRepository.deleteById(idMensaje);
     }
 
-    public boolean existsById(int id){
-        return contactoRepository.existsById(id);
+    public boolean existsById(int idMensaje){
+        return mensajes_ContactoRepository.existsById(idMensaje);
     }
 
-    public boolean existsByFechaMensaje(String fechaMensaje){
-        return contactoRepository.existsByFechaMensaje(fechaMensaje);
+    public boolean existsByFechaHora(String fechaHora){
+        return mensajes_ContactoRepository.existsByFechaHora(fechaHora);
     }
 }

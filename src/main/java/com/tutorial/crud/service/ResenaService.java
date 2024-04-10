@@ -7,41 +7,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.tutorial.crud.entity.Resenas;
-import com.tutorial.crud.security.repository.ResenaRepository;
+import com.tutorial.crud.entity.Resena;
+import com.tutorial.crud.security.repository.ResenasRepository;
 
 @Service
 @Transactional
 public class ResenaService {
 
     @Autowired
-    private ResenaRepository resenaRepository;
+    private ResenasRepository resenasRepository;
 
-    public List<Resenas> list(){
-        return resenaRepository.findAll();
+    public List<Resena> list(){
+        return resenasRepository.findAll();
     }
 
-    public Optional<Resenas> getOne(int id){
-        return resenaRepository.findById(id);
+    public Optional<Resena> getOne(int idResena){
+        return resenasRepository.findById(idResena);
     }
     
-    public Optional<Resenas> findById(int id) {
-        return resenaRepository.findById(id);
+    public Optional<Resena> findById(int idResena) {
+        return resenasRepository.findById(idResena);
     }
 
-    public void save(Resenas resenas){
-    	resenaRepository.save(resenas);
+    public void save(Resena resenas){
+    	resenasRepository.save(resenas);
     }
 
-    public void delete(int id){
-    	resenaRepository.deleteById(id);
+    public void delete(int idResena){
+    	resenasRepository.deleteById(idResena);
     }
 
-    public boolean existsById(int id){
-        return resenaRepository.existsById(id);
+    public boolean existsById(int idResena){
+        return resenasRepository.existsById(idResena);
     }
 
-    public boolean existsByFechaResena(String fechaResena){
-        return resenaRepository.existsByFechaResena(fechaResena);
+    public boolean existsByFechaHora(String fechaHora){
+        return resenasRepository.existsByFechaHora(fechaHora);
     }
 }

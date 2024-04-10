@@ -23,40 +23,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tutorial.crud.dto.Mensaje;
-import com.tutorial.crud.dto.MetodoPagoDto;
+import com.tutorial.crud.dto.Metodos_PagoDto;
 import com.tutorial.crud.entity.Metodo_Pago;
 import com.tutorial.crud.security.entity.Usuario;
-import com.tutorial.crud.service.MetodoPagoService;
+import com.tutorial.crud.service.Metodo_PagoService;
 
 @RestController
-@RequestMapping("/metodopago")
+@RequestMapping("/api/metodoPago")
 @CrossOrigin(origins = "http://localhost:4200")
-public class MetodoPagoController {
+public class Metodo_PagoController {
 
     @Autowired
-    MetodoPagoService metodoPagoService;
+    Metodo_PagoService metodo_PagoService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/lista")
     public ResponseEntity<List<Metodo_Pago>> listarMetodos() {
-        List<Metodo_Pago> metodosPagoDto = metodoPagoService.findAll();
+        List<Metodo_Pago> metodosPagoDto = metodo_PagoService.findAll();
         return new ResponseEntity<>(metodosPagoDto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/detail/{id}")
     public ResponseEntity<?> getById(@PathVariable("id") int id){
-        if(!metodoPagoService.existsById(id))
+        if(!metodo_PagoService.existsById(id))
             return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
-        Metodo_Pago metodoPago = metodoPagoService.getOne(id).get();
-        MetodoPagoDto metodoPagoDto = new MetodoPagoDto();
-        BeanUtils.copyProperties(metodoPago, metodoPagoDto);
-        return new ResponseEntity<>(metodoPagoDto, HttpStatus.OK);
+        Metodo_Pago metodoPago = metodo_PagoService.getOne(id).get();
+        Metodos_PagoDto metodos_PagoDto = new Metodos_PagoDto();
+        BeanUtils.copyProperties(metodoPago, metodos_PagoDto);
+        return new ResponseEntity<>(metodos_PagoDto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody @Valid MetodoPagoDto metodoPagoDto, BindingResult bindingResult){
+    public ResponseEntity<?> create(@RequestBody @Valid Metodos_PagoDto metodos_PagoDto, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             List<ObjectError> errors = bindingResult.getAllErrors();
             StringBuilder errorMessage = new StringBuilder();
@@ -65,19 +65,19 @@ public class MetodoPagoController {
             }
             return new ResponseEntity<>(new Mensaje(errorMessage.toString()), HttpStatus.BAD_REQUEST);
         }
-        if(metodoPagoService.existsByMetodoNombre(metodoPagoDto.getMetodoNombre()))
+        if(metodo_PagoService.existsByMetodoNombre(metodos_PagoDto.getMetodoNombre()))
             return new ResponseEntity<>(new Mensaje("El método de pago ya existe"), HttpStatus.BAD_REQUEST);
 
         Metodo_Pago metodoPago = new Metodo_Pago();
-        metodoPago.setMetodoNombre(metodoPagoDto.getMetodoNombre());
-        metodoPagoService.save(metodoPago);
+        metodoPago.setMetodoNombre(metodos_PagoDto.getMetodoNombre());
+        metodo_PagoService.save(metodoPago);
         return new ResponseEntity<>(new Mensaje("Método de pago creado exitosamente"), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable("id")int id, @RequestBody @Valid MetodoPagoDto metodoPagoDto, BindingResult bindingResult){
-        if(!metodoPagoService.existsById(id))
+    public ResponseEntity<?> update(@PathVariable("id")int id, @RequestBody @Valid Metodos_PagoDto metodos_PagoDto, BindingResult bindingResult){
+        if(!metodo_PagoService.existsById(id))
             return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
         if(bindingResult.hasErrors()){
             List<ObjectError> errors = bindingResult.getAllErrors();
@@ -87,24 +87,24 @@ public class MetodoPagoController {
             }
             return new ResponseEntity<>(new Mensaje(errorMessage.toString()), HttpStatus.BAD_REQUEST);
         }
-        if(metodoPagoService.existsByMetodoNombre(metodoPagoDto.getMetodoNombre()) && metodoPagoService.getByMetodoNombre(metodoPagoDto.getMetodoNombre()).get().getId() != id)
+        if(metodo_PagoService.existsByMetodoNombre(metodos_PagoDto.getMetodoNombre()) && metodo_PagoService.getByMetodoNombre(metodos_PagoDto.getMetodoNombre()).get().getId() != id)
             return new ResponseEntity<>(new Mensaje("Ese método de pago ya existe"), HttpStatus.BAD_REQUEST);
 
-        Metodo_Pago metodoPago = metodoPagoService.findById(id).orElse(null);
+        Metodo_Pago metodoPago = metodo_PagoService.findById(id).orElse(null);
         if (metodoPago == null)
             return new ResponseEntity<>(new Mensaje("No se encontró el método de pago"), HttpStatus.NOT_FOUND);
         
-        metodoPago.setMetodoNombre(metodoPagoDto.getMetodoNombre());
-        metodoPagoService.save(metodoPago);
+        metodoPago.setMetodoNombre(metodos_PagoDto.getMetodoNombre());
+        metodo_PagoService.save(metodoPago);
         return new ResponseEntity<>(new Mensaje("Método de pago actualizado"), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id")int id){
-        if(!metodoPagoService.existsById(id))
+        if(!metodo_PagoService.existsById(id))
             return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
-        metodoPagoService.delete(id);
+        metodo_PagoService.delete(id);
         return new ResponseEntity<>(new Mensaje("Método de pago eliminado"), HttpStatus.OK);
     }
 }

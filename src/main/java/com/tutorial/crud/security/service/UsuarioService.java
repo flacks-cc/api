@@ -9,74 +9,74 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tutorial.crud.security.entity.Usuario;
-import com.tutorial.crud.security.repository.UsuarioRepository;
+import com.tutorial.crud.security.repository.UsuariosRepository;
 
 @Service
 @Transactional
 public class UsuarioService {
 
     @Autowired
-    UsuarioRepository usuarioRepository;
+    UsuariosRepository usuariosRepository;
 
     public Optional<Usuario> getByNombreUsuario(String nombreUsuario) {
-        return usuarioRepository.findByNombreUsuario(nombreUsuario);
+        return usuariosRepository.findByNombreUsuario(nombreUsuario);
     }
 
     public boolean existsByNombreUsuario(String nombreUsuario) {
-        return usuarioRepository.existsByNombreUsuario(nombreUsuario);
+        return usuariosRepository.existsByNombreUsuario(nombreUsuario);
     }
 
-    public boolean existsByEmail(String email) {
-        return usuarioRepository.existsByEmail(email);
+    public boolean existsByEmail(String correo) {
+        return usuariosRepository.existsByEmail(correo);
     }
 
     public void save(Usuario usuario) {
-        usuarioRepository.save(usuario);
+        usuariosRepository.save(usuario);
     }
 
-    public Optional<Usuario> findById(int id) {
-        return usuarioRepository.findById(id);
+    public Optional<Usuario> findById(int idUsuario) {
+        return usuariosRepository.findById(idUsuario);
     }
 
     public List<Usuario> findAll() {
-        return usuarioRepository.findAll();
+        return usuariosRepository.findAll();
     }
 
 
-    public boolean existsByTelefonoAndIdNot(String telefono, int id) {
-        return usuarioRepository.existsByTelefonoAndIdNot(telefono, id);
+    public boolean existsByTelefonoAndIdNot(String telefono, int idUsuario) {
+        return usuariosRepository.existsByTelefonoAndIdNot(telefono, idUsuario);
     }
 
-    public boolean existsByNombreUsuarioAndIdNot(String nombreUsuario, int id) {
-        return usuarioRepository.existsByNombreUsuarioAndIdNot(nombreUsuario, id);
+    public boolean existsByNombreUsuarioAndIdNot(String nombreUsuario, int idUsuario) {
+        return usuariosRepository.existsByNombreUsuarioAndIdNot(nombreUsuario, idUsuario);
     }
 
-    public boolean existsByEmailAndIdNot(String email, int id) {
-        return usuarioRepository.existsByEmailAndIdNot(email, id);
+    public boolean existsByEmailAndIdNot(String correo, int idUsuario) {
+        return usuariosRepository.existsByEmailAndIdNot(correo, idUsuario);
     }
 
     public boolean existsByTelefono(String telefono) {
-        return usuarioRepository.existsByTelefono(telefono);
+        return usuariosRepository.existsByTelefono(telefono);
     }
     
-    public void deleteById(int id) {
-        usuarioRepository.deleteById(id);
+    public void deleteById(int idUsuario) {
+        usuariosRepository.deleteById(idUsuario);
     }
 
-    public boolean existsById(int id) {
-        return usuarioRepository.existsById(id);
+    public boolean existsById(int idUsuario) {
+        return usuariosRepository.existsById(idUsuario);
     }
 
     public Optional<Usuario> findByNombreUsuario(String nombreUsuario) {
-        return usuarioRepository.findByNombreUsuario(nombreUsuario);
+        return usuariosRepository.findByNombreUsuario(nombreUsuario);
     }
 
-    public Usuario getByEmail(String email) {
-        return usuarioRepository.findByEmail(email);
+    public Usuario getByEmail(String correo) {
+        return usuariosRepository.findByEmail(correo);
     }
 
-    public Optional<Usuario> getByNombreUsuarioOrEmail(String nombreUsuario, String email) {
-        return usuarioRepository.findByNombreUsuarioOrEmail(nombreUsuario, email);
+    public Optional<Usuario> getByNombreUsuarioOrEmail(String nombreUsuario, String correo) {
+        return usuariosRepository.findByNombreUsuarioOrEmail(nombreUsuario, correo);
     }
 
 }

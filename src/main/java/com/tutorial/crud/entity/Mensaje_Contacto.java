@@ -13,9 +13,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.tutorial.crud.security.entity.Usuario;
+
 @Entity
 @Table(name = "Mensajes_Contacto")
-public class MensajeContacto {
+public class Mensaje_Contacto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,12 +25,12 @@ public class MensajeContacto {
     private Long idMensaje;
 
     @NotNull(message = "El asunto no puede ser nulo")
-    @Size(max = 255, message = "El asunto debe tener como máximo 255 caracteres")
+    @Size(max = 255, message = "Se acepta un máximo de 255 caracteres")
     @Column(name = "asunto", nullable = false, length = 255)
     private String asunto;
 
     @NotNull(message = "El mensaje no puede ser nulo")
-    @Size(max = 255, message = "El mensaje debe tener como máximo 255 caracteres")
+    @Size(max = 255, message = "Se acepta un máximo de 255 caracteres")
     @Column(name = "mensaje", nullable = false, length = 255)
     private String mensaje;
 
@@ -45,11 +47,11 @@ public class MensajeContacto {
     private Usuario cliente;
 
     // Constructor vacío
-    public MensajeContacto() {
+    public Mensaje_Contacto() {
     }
 
     // Constructor lleno
-    public MensajeContacto(String asunto, String mensaje, String adjunto, LocalDateTime fechaHora, Usuario cliente) {
+    public Mensaje_Contacto(String asunto, String mensaje, String adjunto, LocalDateTime fechaHora, Usuario cliente) {
         this.asunto = asunto;
         this.mensaje = mensaje;
         this.adjunto = adjunto;
@@ -109,7 +111,11 @@ public class MensajeContacto {
     // Método toString
     @Override
     public String toString() {
-        return "MensajeContacto [idMensaje=" + idMensaje + ", asunto=" + asunto + ", mensaje=" + mensaje + ", adjunto=" + adjunto
-                + ", fechaHora=" + fechaHora + ", cliente=" + cliente + "]";
+        return "MensajeContacto [idMensaje=" + idMensaje + 
+        		", asunto=" + asunto + 
+        		", mensaje=" + mensaje + 
+        		", adjunto=" + adjunto + 
+        		", fechaHora=" + fechaHora + 
+        		", cliente=" + cliente + "]";
     }
 }

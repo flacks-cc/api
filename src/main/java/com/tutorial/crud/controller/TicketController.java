@@ -33,7 +33,7 @@ import com.tutorial.crud.entity.Ticket;
 import com.tutorial.crud.security.entity.Usuario;
 import com.tutorial.crud.security.service.UsuarioService;
 import com.tutorial.crud.service.DetalleProductoService;
-import com.tutorial.crud.service.MetodoPagoService;
+import com.tutorial.crud.service.Metodo_PagoService;
 import com.tutorial.crud.service.ProductoService;
 import com.tutorial.crud.service.ReservacionService;
 import com.tutorial.crud.service.TicketService;
@@ -57,7 +57,7 @@ public class TicketController {
     private UsuarioService usuarioService;
     
     @Autowired
-    private MetodoPagoService metodoPagoService;
+    private Metodo_PagoService metodo_PagoService;
     
     public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
@@ -184,7 +184,7 @@ public class TicketController {
                 .orElseThrow(() -> new IllegalArgumentException("El detalle producto especificado no existe"));
         
         // Obtener el método de pago a partir del ID proporcionado
-        Metodo_Pago metodoPago = metodoPagoService.findById(ticketDto.getIdMetodoPago())
+        Metodo_Pago metodoPago = metodo_PagoService.findById(ticketDto.getIdMetodoPago())
                 .orElseThrow(() -> new IllegalArgumentException("El método de pago especificado no existe"));
         
         // Obtener el usuario a partir del ID proporcionado
@@ -234,7 +234,7 @@ public class TicketController {
                 .orElseThrow(() -> new IllegalArgumentException("El detalle producto especificado no existe"));
         
         // Obtener el método de pago a partir del ID proporcionado en el DTO
-        Metodo_Pago metodoPago = metodoPagoService.findById(ticketDto.getIdMetodoPago())
+        Metodo_Pago metodoPago = metodo_PagoService.findById(ticketDto.getIdMetodoPago())
                 .orElseThrow(() -> new IllegalArgumentException("El método de pago especificado no existe"));
         
         // Obtener el usuario a partir del ID proporcionado en el DTO

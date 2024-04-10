@@ -6,14 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tutorial.crud.security.entity.Usuario;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+public interface UsuariosRepository extends JpaRepository<Usuario, Integer> {
     Optional<Usuario> findByNombreUsuario(String nombreUsuario);
     boolean existsByNombreUsuario(String nombreUsuario);
-    boolean existsByEmail(String email);
-    Usuario findByEmail(String email);
+    boolean existsByEmail(String correo);
+    Usuario findByEmail(String correo);
     boolean existsByTelefono(String telefono);
-    Optional<Usuario> findByNombreUsuarioOrEmail(String nombreUsuario, String email);
-    boolean existsByTelefonoAndIdNot(String telefono, int id);
-    boolean existsByNombreUsuarioAndIdNot(String nombreUsuario, int id);
-    boolean existsByEmailAndIdNot(String email, int id);
+    Optional<Usuario> findByNombreUsuarioOrEmail(String nombreUsuario, String correo);
+    boolean existsByTelefonoAndIdNot(String telefono, int idUsuario);
+    boolean existsByNombreUsuarioAndIdNot(String nombreUsuario, int idUsuario);
+    boolean existsByEmailAndIdNot(String correo, int idUsuario);
 }

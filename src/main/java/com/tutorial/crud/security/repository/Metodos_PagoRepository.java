@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.tutorial.crud.entity.Metodo_Pago;
 
 @Repository
-public interface MetodoPagoRepository extends JpaRepository<Metodo_Pago, Integer> {
+public interface Metodos_PagoRepository extends JpaRepository<Metodo_Pago, Integer> {
 
     Optional<Metodo_Pago> findByMetodoNombre(String nombre);
 

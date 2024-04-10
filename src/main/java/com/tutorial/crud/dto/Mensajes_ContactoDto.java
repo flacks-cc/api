@@ -2,40 +2,32 @@ package com.tutorial.crud.dto;
 
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotNull;
-
-import com.tutorial.crud.security.entity.Usuario;
-
-public class ContactoDto {
-
+public class Mensajes_ContactoDto {
+    private Integer idMensaje;
     private String asunto;
     private String mensaje;
     private String adjunto;
+    private LocalDateTime fechaHora;
+    private Integer idCliente;
 
-    private LocalDateTime fechaMensaje;
-
-    @NotNull(message = "El id de usuario debe ser ingresado y no puede ser nulo")
-    private int idUsuario;
-
-    private Usuario usuario;
-
-    public ContactoDto() {
-    }
-
-    // Constructor con Usuario
-    public ContactoDto(String asunto, String mensaje, String adjunto, LocalDateTime fechaMensaje, Usuario usuario) {
+    // Constructor
+    public Mensajes_ContactoDto(Integer idMensaje, String asunto, String mensaje, String adjunto, LocalDateTime fechaHora, Integer idCliente) {
+        this.idMensaje = idMensaje;
         this.asunto = asunto;
         this.mensaje = mensaje;
         this.adjunto = adjunto;
-        this.fechaMensaje = fechaMensaje;
-
-        if (usuario != null) {
-            this.idUsuario = usuario.getId();
-            this.usuario = usuario;
-        }
+        this.fechaHora = fechaHora;
+        this.idCliente = idCliente;
     }
-    
+
     // Getters y Setters
+    public Integer getIdMensaje() {
+        return idMensaje;
+    }
+
+    public void setIdMensaje(Integer idMensaje) {
+        this.idMensaje = idMensaje;
+    }
 
     public String getAsunto() {
         return asunto;
@@ -61,27 +53,19 @@ public class ContactoDto {
         this.adjunto = adjunto;
     }
 
-    public LocalDateTime getFechaMensaje() {
-        return fechaMensaje;
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
     }
 
-    public void setFechaMensaje(LocalDateTime fechaMensaje) {
-        this.fechaMensaje = fechaMensaje;
+    public void setFechaHora(LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
     }
 
-    public int getIdUsuario() {
-        return idUsuario;
+    public Integer getIdCliente() {
+        return idCliente;
     }
 
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setIdCliente(Integer idCliente) {
+        this.idCliente = idCliente;
     }
 }

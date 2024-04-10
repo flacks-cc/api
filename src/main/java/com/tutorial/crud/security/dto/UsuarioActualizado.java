@@ -1,95 +1,89 @@
 package com.tutorial.crud.security.dto;
 
-import java.util.List;
-
 public class UsuarioActualizado {
+    private Integer idUsuario;
+    private String nombreUsuario;
+    private String nombre;
+    private String apellidoPaterno;
+    private String apellidoMaterno;
+    private String correoElectronico;
+    private String contrasena;
+    private String numeroTelefono;
 
-private String nombre;
-private String apellidoPaterno;
-private String apellidoMaterno;
-private String telefono;
-private String nombreUsuario;
-private String email;
-private String password;
-private List<String> roles; // Puedes usar una lista para los roles
+    // Constructor
+    public UsuarioActualizado(Integer idUsuario, String nombreUsuario, String nombre, String apellidoPaterno, String apellidoMaterno, String correoElectronico, String contrasena, String numeroTelefono) {
+        this.idUsuario = idUsuario;
+        this.nombreUsuario = nombreUsuario;
+        this.nombre = nombre;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.correoElectronico = correoElectronico;
+        this.contrasena = contrasena;
+        this.numeroTelefono = numeroTelefono;
+    }
 
-// Constructor, getters y setters aquí (según tus necesidades)
+    // Getters y Setters
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
 
-// Ejemplo de constructor
-public UsuarioActualizado(String nombre, String apellidoPaterno, String apellidoMaterno,
-                         String telefono, String nombreUsuario, String email, String password,
-                         List<String> roles) {
-    this.nombre = nombre;
-    this.apellidoPaterno = apellidoPaterno;
-    this.apellidoMaterno = apellidoMaterno;
-    this.telefono = telefono;
-    this.nombreUsuario = nombreUsuario;
-    this.email = email;
-    this.password = password;
-    this.roles = roles;
-}
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
+    }
 
-public String getNombre() {
-	return nombre;
-}
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
 
-public void setNombre(String nombre) {
-	this.nombre = nombre;
-}
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
 
-public String getApellidoPaterno() {
-	return apellidoPaterno;
-}
+    public String getNombre() {
+        return nombre;
+    }
 
-public void setApellidoPaterno(String apellidoPaterno) {
-	this.apellidoPaterno = apellidoPaterno;
-}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-public String getApellidoMaterno() {
-	return apellidoMaterno;
-}
+    public String getApellidoPaterno() {
+        return apellidoPaterno;
+    }
 
-public void setApellidoMaterno(String apellidoMaterno) {
-	this.apellidoMaterno = apellidoMaterno;
-}
+    public void setApellidoPaterno(String apellidoPaterno) {
+        this.apellidoPaterno = apellidoPaterno;
+    }
 
-public String getTelefono() {
-	return telefono;
-}
+    public String getApellidoMaterno() {
+        return apellidoMaterno;
+    }
 
-public void setTelefono(String telefono) {
-	this.telefono = telefono;
-}
+    public void setApellidoMaterno(String apellidoMaterno) {
+        this.apellidoMaterno = apellidoMaterno;
+    }
 
-public String getNombreUsuario() {
-	return nombreUsuario;
-}
+    public String getCorreoElectronico() {
+        return correoElectronico;
+    }
 
-public void setNombreUsuario(String nombreUsuario) {
-	this.nombreUsuario = nombreUsuario;
-}
+    public void setCorreoElectronico(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
+    }
 
-public String getEmail() {
-	return email;
-}
+    public String getContrasena() {
+        return contrasena;
+    }
 
-public void setEmail(String email) {
-	this.email = email;
-}
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
+    }
 
-public String getPassword() {
-	return password;
-}
+    public String getNumeroTelefono() {
+        return numeroTelefono;
+    }
 
-public void setPassword(String password) {
-	this.password = password;
-}
-
-public List<String> getRoles() {
-	return roles;
-}
-
-public void setRoles(List<String> roles) {
-	this.roles = roles;
-}
+    public void setNumeroTelefono(String numeroTelefono) {
+        this.numeroTelefono = numeroTelefono;
+    }
 }
