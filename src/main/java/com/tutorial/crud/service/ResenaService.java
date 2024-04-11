@@ -32,7 +32,12 @@ public class ResenaService {
     public void deleteById(Long idResena){
     	resenasRepository.deleteById(idResena);
     }
-
+    
+    // Eliminar un servicio existe
+    public void delete(Long idResena) {
+    	resenasRepository.deleteById(idResena);
+    }
+    
     public boolean existsById(Long idResena){
         return resenasRepository.existsById(idResena);
     }

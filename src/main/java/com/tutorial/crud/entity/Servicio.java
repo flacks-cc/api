@@ -30,14 +30,14 @@ public class Servicio {
 	private double precio;
 
 	@Column(name = "duracion")
-	private Duration duracion;
+	private int duracion;
 
 	// Constructor vacío
 	public Servicio() {
 	}
 
 	// Constructor con todos los atributos
-	public Servicio(String nombre, String descripcion, double precio, Duration duracion) {
+	public Servicio(String nombre, String descripcion, double precio, int duracion) {
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.precio = precio;
@@ -77,11 +77,11 @@ public class Servicio {
 		this.precio = precio;
 	}
 
-	public Duration getDuracion() {
+	public int getDuracion() {
 		return duracion;
 	}
 
-	public void setDuracion(Duration duracion) {
+	public void setDuracion(int duracion) {
 		this.duracion = duracion;
 	}
 

@@ -12,14 +12,14 @@ public class ServicioDto {
 
 	private double precio;
 
-	private Duration duracion;
+	private int duracion;
 
 	// Constructor vacío
 	public ServicioDto() {
 	}
 
 	// Constructor con todos los atributos
-	public ServicioDto(String nombre, String descripcion, double precio, Duration duracion) {
+	public ServicioDto(String nombre, String descripcion, double precio, int duracion) {
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.precio = precio;
@@ -59,11 +59,11 @@ public class ServicioDto {
 		this.precio = precio;
 	}
 
-	public Duration getDuracion() {
+	public int getDuracion() {
 		return duracion;
 	}
 
-	public void setDuracion(Duration duracion) {
+	public void setDuracion(int duracion) {
 		this.duracion = duracion;
 	}
 }

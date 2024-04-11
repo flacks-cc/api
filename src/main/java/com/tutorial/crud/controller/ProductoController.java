@@ -1,6 +1,9 @@
 package com.tutorial.crud.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,43 +22,65 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.tutorial.crud.dto.Mensaje;
 import com.tutorial.crud.dto.ProductoDto;
+import com.tutorial.crud.entity.MensajeContacto;
 import com.tutorial.crud.entity.Producto;
 import com.tutorial.crud.service.ProductoService;
 
 @RestController
-@RequestMapping("api/producto")
+@RequestMapping("/api/producto")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ProductoController {
 
 	@Autowired
 	ProductoService productoService;
 
-	// Endpoint para crear un nuevo producto
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/createProduct")
 	public ResponseEntity<?> createProduct(@RequestBody @Valid ProductoDto productoDto, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			StringBuilder errorMessage = new StringBuilder();
-			bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
-			return ResponseEntity.badRequest().body(new Mensaje(errorMessage.toString()));
-		}
+	    if (bindingResult.hasErrors()) {
+	        StringBuilder errorMessage = new StringBuilder();
+	        bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
+	        return ResponseEntity.badRequest().body(new Mensaje(errorMessage.toString()));
+	    }
 
-		// Verificar si ya existe un producto con el mismo nombre
-		if (productoService.existsByNombre(productoDto.getNombre())) {
-			return ResponseEntity.badRequest().body(new Mensaje("Ya existe un producto con el mismo nombre"));
-		}
+	    // Verificar si ya existe un producto con el mismo nombre
+	    if (productoService.existsByNombre(productoDto.getNombre())) {
+	        return ResponseEntity.badRequest().body(new Mensaje("Ya existe un producto con el mismo nombre"));
+	    }
 
-		Producto producto = new Producto();
-		productoService.save(producto);
-		return ResponseEntity.ok(new Mensaje("Producto creado exitosamente"));
+	    // Mapeo de atributos de ProductoDto a Producto
+	    Producto producto = new Producto(
+	        productoDto.getNombre(),
+	        productoDto.getDescripcion(),
+	        productoDto.getPrecio(),
+	        productoDto.getStock()
+	    );
+
+	    productoService.save(producto);
+	    return ResponseEntity.ok(new Mensaje("Producto creado exitosamente"));
 	}
+
 
 	// Endpoint para obtener la lista de todos los productos
 	@GetMapping("/getAllProducts")
-	public ResponseEntity<List<Producto>> getAllProducts() {
-		List<Producto> list = productoService.findAll();
-		return new ResponseEntity<>(list, HttpStatus.OK);
+	public ResponseEntity<List<Map<String, Object>>> getAllProducts() {
+	    List<Producto> productos = productoService.findAll();
+
+	    List<Map<String, Object>> productosMap = new ArrayList<>();
+	    for (Producto producto : productos) {
+	        Map<String, Object> productoMap = new HashMap<>();
+	        productoMap.put("idProducto", producto.getIdProducto());
+	        productoMap.put("nombre", producto.getNombre());
+	        productoMap.put("descripcion", producto.getDescripcion());
+	        productoMap.put("precio", producto.getPrecio());
+	        productoMap.put("stock", producto.getStock());
+	        productosMap.add(productoMap);
+	    }
+	    return new ResponseEntity<>(productosMap, HttpStatus.OK);
 	}
+
+
+	 
 
 	// Endpoint para obtener los detalles de un producto por su ID
 	@GetMapping("/getProductById/{idProducto}")
@@ -78,37 +103,33 @@ public class ProductoController {
 	// Endpoint para actualizar un producto
 	@PreAuthorize("hasRole('USER') and hasRole('ADMIN')")
 	@PutMapping("/updateProduct/{idProducto}")
-	public ResponseEntity<?> updateProduct(@PathVariable("idProducto") Long idProducto,
-			@RequestBody @Valid ProductoDto productoDto, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			StringBuilder errorMessage = new StringBuilder();
-			bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
-			return ResponseEntity.badRequest().body(new Mensaje(errorMessage.toString()));
-		}
+	public ResponseEntity<Mensaje> updateProduct(@PathVariable("idProducto") Long idProducto,
+	                                             @RequestBody @Valid ProductoDto productoDto,
+	                                             BindingResult bindingResult) {
 
-		// Verificar si el producto con el ID especificado existe
-		Optional<Producto> existingProductoOptional = productoService.findById(idProducto);
-		if (!existingProductoOptional.isPresent()) {
-			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
-		}
+	    if (bindingResult.hasErrors()) {
+	        StringBuilder errorMessage = new StringBuilder();
+	        bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
+	        return ResponseEntity.badRequest().body(new Mensaje(errorMessage.toString()));
+	    }
 
-		Producto existingProducto = existingProductoOptional.get();
+	    if (!productoService.existsById(idProducto)) {
+	        return ResponseEntity.notFound().build();
+	    }
 
-		// Verificar si se está intentando actualizar el nombre del producto a uno que
-		// ya existe
-		if (!existingProducto.getNombre().equals(productoDto.getNombre())
-				&& productoService.existsByNombre(productoDto.getNombre())) {
-			return ResponseEntity.badRequest().body(new Mensaje("Ya existe un producto con el mismo nombre"));
-		}
+	    Producto producto = new Producto(
+	            productoDto.getNombre(),
+	            productoDto.getDescripcion(),
+	            productoDto.getPrecio(),
+	            productoDto.getStock()
+	    );
 
-		existingProducto.setNombre(productoDto.getNombre());
-		existingProducto.setDescripcion(productoDto.getDescripcion());
-		existingProducto.setStock(productoDto.getStock());
-		existingProducto.setPrecio(productoDto.getPrecio());
-		productoService.save(existingProducto);
+	    productoService.save(producto);
 
-		return ResponseEntity.ok(new Mensaje("Producto actualizado exitosamente"));
+	    return ResponseEntity.ok(new Mensaje("Producto actualizado exitosamente"));
 	}
+
+
 
 	// Endpoint para eliminar un producto
 	@PreAuthorize("hasRole('ADMIN')")

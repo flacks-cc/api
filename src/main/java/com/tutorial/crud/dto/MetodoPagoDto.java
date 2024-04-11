@@ -2,7 +2,7 @@ package com.tutorial.crud.dto;
 
 public class MetodoPagoDto {
 
-	private Integer idMetodoPago;
+	private Long idMetodoPago;
 
 	private String nombre;
 
@@ -11,17 +11,17 @@ public class MetodoPagoDto {
 	}
 
 	// Constructor
-	public MetodoPagoDto(Integer idMetodoPago, String nombre) {
+	public MetodoPagoDto(Long idMetodoPago, String nombre) {
 		this.idMetodoPago = idMetodoPago;
 		this.nombre = nombre;
 	}
 
 	// Getters y Setters
-	public Integer getIdMetodoPago() {
+	public Long getIdMetodoPago() {
 		return idMetodoPago;
 	}
 
-	public void setIdMetodoPago(Integer idMetodoPago) {
+	public void setIdMetodoPago(Long idMetodoPago) {
 		this.idMetodoPago = idMetodoPago;
 	}
 

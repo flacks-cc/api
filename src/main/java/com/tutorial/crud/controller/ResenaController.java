@@ -1,6 +1,7 @@
 package com.tutorial.crud.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ import com.tutorial.crud.service.ResenaService;
 import com.tutorial.crud.service.ServicioService;
 
 @RestController
-@RequestMapping("api/resenas")
+@RequestMapping("/api/resenas")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ResenaController {
 
@@ -52,26 +53,87 @@ public class ResenaController {
 	@Autowired
 	private UsuarioService usuarioService;
 
-	// Endpoint para obetner todas las reseñas
-//	@GetMapping("/getAllReviews")
-//	public ResponseEntity<List<ResenaDto>> getAllReviews() {
-//		List<Resena> resena = resenaService.findAll();
-//		List<ResenaDto> resenaDtos = resena.stream().map(resena -> {
-//			ResenaDto resenaDto = new ResenaDto();
-//			BeanUtils.copyProperties(resena, resenaDto);
-//			return resenaDto;
-//		}).collect(Collectors.toList());
-//
-//		return new ResponseEntity<>(resenaDtos, HttpStatus.OK);
-//	}
-
-	// Endpoint para obtener una reseña a trvés de su ID
-	@PreAuthorize("hasRole('ADMIN')")
-	@GetMapping("/getReviewById/{id}")
-	public ResponseEntity<Object> getReviewById(@PathVariable("id") Long id) {
-	    Optional<Resena> resenaOptional = resenaService.findById(id);
-	    if (!resenaOptional.isPresent())
-	        return new ResponseEntity<>(new Mensaje("No existe la reseña"), HttpStatus.NOT_FOUND);
-	    return new ResponseEntity<>(resenaOptional.get(), HttpStatus.OK);
+	@PostMapping("/CreateUserReview")
+	public ResponseEntity<?> crearUsuario(@Valid @RequestBody ResenaDto resenaDto) {
+	    // Obtener la fecha y hora actual
+	    LocalDateTime fechaHoraActual = LocalDateTime.now();
+	    // Obtener el usuario actual
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String nombreUsuario = authentication.getName();
+	    Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
+	            .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
+	    // Obtener el servicio a partir del ID proporcionado, si existe
+	    Servicio servicio = null;
+	    if (resenaDto.getIdServicio() != null) {
+	        Long idServicio = resenaDto.getIdServicio().longValue(); // Convertir Integer a Long
+	        servicio = servicioService.findById(idServicio)
+	                .orElseThrow(() -> new IllegalArgumentException("El servicio especificado no existe"));
+	    }
+	    // Obtener el producto a partir del ID proporcionado, si existe
+	    Producto producto = null;
+	    if (resenaDto.getIdProducto() != null) {
+	        Long idProducto = resenaDto.getIdProducto().longValue(); // Convertir Integer a Long
+	        producto = productoService.findById(idProducto)
+	                .orElseThrow(() -> new IllegalArgumentException("El producto especificado no existe"));
+	    }
+	    // Crear la reseña con la fecha y hora actual, el usuario actual, el servicio y el producto
+	    Resena resena = new Resena(
+	            resenaDto.getMensaje(),
+	            resenaDto.getValoracion(),
+	            fechaHoraActual,
+	            usuario,
+	            producto,
+	            servicio
+	    );
+	    // Guardar la reseña en la base de datos
+	    try {
+	        resenaService.save(resena);
+	        return ResponseEntity.ok(new Mensaje("Reseña creada correctamente"));
+	    } catch (Exception e) {
+	        return new ResponseEntity<>(new Mensaje("Error al crear la reseña: " + e.getMessage()), HttpStatus.BAD_REQUEST);
+	    }
 	}
+	
+	@GetMapping("/getAllReviews")
+	public ResponseEntity<List<Map<String, Object>>> getAllReviews() {
+	    // Obtener todas las reseñas de la base de datos
+	    List<Resena> resenas = resenaService.findAll();
+	    
+	    // Convertir las reseñas a una lista de mapas con los campos necesarios
+	    List<Map<String, Object>> resenasMap = new ArrayList<>();
+	    for (Resena resena : resenas) {
+	        Map<String, Object> resenaMap = new HashMap<>();
+	        resenaMap.put("idResena", resena.getIdResena());
+	        resenaMap.put("mensaje", resena.getMensaje());
+	        resenaMap.put("valoracion", resena.getValoracion());
+	        resenaMap.put("fechaHora", resena.getFechaHora());
+	        resenaMap.put("cliente", resena.getCliente().getNombre()); // Obtener solo el nombre del cliente
+	        resenaMap.put("producto", resena.getProducto().getNombre()); // Obtener solo el nombre del producto
+	        resenaMap.put("servicio", resena.getServicio().getNombre()); // Obtener solo el nombre del servicio
+	        resenasMap.add(resenaMap);
+	    }
+	    return new ResponseEntity<>(resenasMap, HttpStatus.OK);
+	}
+
+	
+	//Obtener reseña por id
+	@GetMapping("/getReviewById/{idResena}")
+	public ResponseEntity<Object> getReviewById(@PathVariable("idResena") Long idResena) {
+	    if (!resenaService.existsById(idResena))
+	        return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
+	    Resena resena = resenaService.findById(idResena).get();
+	    return new ResponseEntity<>(resena, HttpStatus.OK);
+	}
+
+    @DeleteMapping("/deleteReview/{idResena}")
+    public ResponseEntity<?> delete(@PathVariable("idResena") Long idResena) {
+        // Verificar si la reseña existe
+        if (!resenaService.existsById(idResena)) {
+            return new ResponseEntity<>(new Mensaje("No existe la reseña"), HttpStatus.NOT_FOUND);
+        }
+        // Eliminar la reseña
+        resenaService.deleteById(idResena);
+        // Devolver un mensaje de éxito
+        return new ResponseEntity<>(new Mensaje("Reseña eliminada correctamente"), HttpStatus.OK);
+    }
 }

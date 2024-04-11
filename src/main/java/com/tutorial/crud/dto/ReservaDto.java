@@ -16,6 +16,13 @@ public class ReservaDto {
 	private LocalTime horaFin;
 
 	private boolean activa;
+	
+
+	private Long idCliente;
+
+	private Long idProducto;
+
+	private Long idServicio;
 
 	private Servicio servicio;
 
@@ -102,5 +109,29 @@ public class ReservaDto {
 
 	public void setEmpleado(Usuario empleado) {
 		this.empleado = empleado;
+	}
+	
+	public Long getIdCliente() {
+		return idCliente;
+	}
+
+	public void setIdCliente(Long idCliente) {
+		this.idCliente = idCliente;
+	}
+
+	public Long getIdProducto() {
+		return idProducto;
+	}
+
+	public void setIdProducto(Long idProducto) {
+		this.idProducto = idProducto;
+	}
+
+	public Long getIdServicio() {
+		return idServicio;
+	}
+
+	public void setIdServicio(Long idServicio) {
+		this.idServicio = idServicio;
 	}
 }

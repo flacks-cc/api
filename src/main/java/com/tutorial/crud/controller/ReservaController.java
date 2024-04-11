@@ -50,13 +50,17 @@ public class ReservaController {
 	@PostMapping("/createReserve")
 	public ResponseEntity<?> createReserve(@RequestBody ReservaDto reservaDto) {
 		// Obtener el nombre de usuario del token
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String nombreUsuario = authentication.getName();
-
-		// Obtener el servicio a partir del ID proporcionado
-		Servicio servicio = servicioService.findById(reservaDto.getServicio().getIdServicio())
-				.orElseThrow(() -> new IllegalArgumentException("El servicio especificado no existe"));
-
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String nombreUsuario = authentication.getName();
+	    Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
+	            .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
+	    // Obtener el servicio a partir del ID proporcionado, si existe
+	    Servicio servicio = null;
+	    if (reservaDto.getIdServicio() != null) {
+	        Long idServicio = reservaDto.getIdServicio().longValue();
+	        servicio = servicioService.findById(idServicio)
+	                .orElseThrow(() -> new IllegalArgumentException("El servicio especificado no existe"));
+	    }
 		// Obtener el usuario cliente a partir del nombre de usuario
 		Usuario usuarioCliente = usuarioService.findByNombreUsuario(nombreUsuario)
 				.orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
@@ -65,11 +69,11 @@ public class ReservaController {
 		Usuario usuarioEmpleado = usuarioService.findByNombreUsuario(nombreUsuario)
 				.orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
 
-		// Calcular la hora de fin de la reservación
-		LocalTime horaInicio = reservaDto.getHoraInicio();
-		Duration duracion = servicio.getDuracion(); // Obtener la duración del servicio
-		long duracionEnMinutos = duracion.toMinutes(); // Convertir la duración a minutos
-		LocalTime horaFin = horaInicio.plusMinutes(duracionEnMinutos);
+        // Calcular la hora de fin de la reservación
+        LocalTime horaInicio = reservaDto.getHoraInicio();
+        int duracionEnMinutos = servicio.getDuracion(); // Obtener la duración del servicio en minutos
+        Duration duracion = Duration.ofMinutes(duracionEnMinutos); // Convertir la duración a Duration
+        LocalTime horaFin = horaInicio.plus(duracion);
 
 		// Verificar si existe alguna reservación en el intervalo de tiempo deseado
 		if (reservaService.existeReservaEnIntervalo(horaInicio, horaFin)) {
