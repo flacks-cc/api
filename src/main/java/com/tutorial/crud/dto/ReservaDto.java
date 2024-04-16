@@ -22,6 +22,9 @@ public class ReservaDto {
 
 	private Long idProducto;
 
+	private Long idEmpleado;
+
+
 	private Long idServicio;
 
 	private Servicio servicio;
@@ -45,8 +48,17 @@ public class ReservaDto {
 		this.cliente = cliente;
 		this.empleado = empleado;
 	}
+	
 
 	// Getters y setters
+	
+	public Long getIdEmpleado() {
+		return idEmpleado;
+	}
+
+	public void setIdEmpleado(Long idEmpleado) {
+		this.idEmpleado = idEmpleado;
+	}
 	public Long getIdReserva() {
 		return idReserva;
 	}

@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tutorial.crud.security.entity.Usuario;
+import com.tutorial.crud.security.enums.RolNombre;
 
 public interface UsuariosRepository extends JpaRepository<Usuario, Long> {
 
@@ -25,5 +26,8 @@ public interface UsuariosRepository extends JpaRepository<Usuario, Long> {
 	boolean existsByNombreUsuarioAndIdUsuarioNot(String nombreUsuario, Long idUsuario);
 
 	boolean existsByEmailAndIdUsuarioNot(String email, Long idUsuario);
+	
+    long countByRolesNombre(RolNombre rolNombre);
+
 
 }

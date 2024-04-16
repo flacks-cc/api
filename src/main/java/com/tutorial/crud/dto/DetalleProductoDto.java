@@ -13,6 +13,26 @@ public class DetalleProductoDto {
 
 	private Producto producto;
 
+	public Long getIdReserva() {
+		return idReserva;
+	}
+
+	public void setIdReserva(Long idReserva) {
+		this.idReserva = idReserva;
+	}
+
+	public Long getIdProducto() {
+		return idProducto;
+	}
+
+	public void setIdProducto(Long idProducto) {
+		this.idProducto = idProducto;
+	}
+
+	private Long idReserva;
+
+	private Long idProducto;
+
 	// Constructor vacío
 	public DetalleProductoDto() {
 	}
@@ -25,6 +45,20 @@ public class DetalleProductoDto {
 		this.producto = producto;
 	}
 
+	// Constructor con todas las propiedades
+    public DetalleProductoDto(int cantidad, double total, Producto producto, Reserva reserva) {
+        this.cantidad = cantidad;
+        this.total = total;
+        this.producto = producto;
+        this.reserva = reserva;
+
+        if (reserva != null) {
+            this.idReserva = reserva.getIdReserva();
+        }
+        if (producto != null) {
+            this.idProducto = producto.getIdProducto();
+        }
+    }
 	// Getters y setters
 	public int getCantidad() {
 		return cantidad;

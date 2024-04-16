@@ -30,13 +30,24 @@ public class TicketDto {
 
 	private Reserva reserva;
 
+	private Long idMetodoPago;
+	
+    public Long getIdMetodoPago() {
+		return idMetodoPago;
+	}
+
+	public void setIdMetodoPago(Long idMetodoPago) {
+		this.idMetodoPago = idMetodoPago;
+	}
+
+
 	// Constructor vacío
 	public TicketDto() {
 	}
 
 	// Constructor con todos los atributos
 	public TicketDto(LocalDateTime fechaHoraExpedicion, double montoTotal, LocalDateTime fechaHoraPago,
-			double montoPagado, double cambio, MetodoPago metodoPago, Usuario empleado, Reserva reserva) {
+			double montoPagado, double cambio, MetodoPago metodoPago, Usuario empleado, Reserva reserva, Long idDetalleProducto) {
 		this.fechaHoraExpedicion = fechaHoraExpedicion;
 		this.montoTotal = montoTotal;
 		this.fechaHoraPago = fechaHoraPago;
@@ -45,6 +56,7 @@ public class TicketDto {
 		this.metodoPago = metodoPago;
 		this.empleado = empleado;
 		this.reserva = reserva;
+        this.idDetalleProducto = idDetalleProducto;
 	}
 
 	// Getters y setters
@@ -120,6 +132,16 @@ public class TicketDto {
 		this.reserva = reserva;
 	}
 
+    public Long getIdDetalleProducto() {
+		return idDetalleProducto;
+	}
+
+	public void setIdDetalleProducto(Long idDetalleProducto) {
+		this.idDetalleProducto = idDetalleProducto;
+	}
+
+	private Long idDetalleProducto;
+	
 	public static class TicketDetailsDTO {
 		private LocalDateTime fechaHoraExpedicion;
 		private double montoTotal;
@@ -226,9 +248,14 @@ public class TicketDto {
 		public List<ProductoDetailsDTO> getProductos() {
 			return productos;
 		}
-
+		
 		public void setProductos(List<ProductoDetailsDTO> productos) {
 			this.productos = productos;
 		}
-	}
-}
+		
+		}
+
+		public Long idMetodoPago() {
+			return idMetodoPago;
+		}
+	}	

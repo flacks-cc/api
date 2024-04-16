@@ -1,6 +1,8 @@
 package com.tutorial.crud.controller;
 
+
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +29,13 @@ import com.tutorial.crud.dto.Mensaje;
 import com.tutorial.crud.dto.ReservaDto;
 import com.tutorial.crud.entity.Reserva;
 import com.tutorial.crud.entity.Servicio;
+import com.tutorial.crud.entity.Ticket;
 import com.tutorial.crud.security.entity.Usuario;
+import com.tutorial.crud.security.enums.RolNombre;
 import com.tutorial.crud.security.service.UsuarioService;
 import com.tutorial.crud.service.ReservaService;
 import com.tutorial.crud.service.ServicioService;
+import com.tutorial.crud.service.TicketService;
 
 @RestController
 @RequestMapping("/api/reserva")
@@ -46,202 +51,172 @@ public class ReservaController {
 	@Autowired
 	private ServicioService servicioService;
 
-	// Agrega una reservación como cliente
-	@PostMapping("/createReserve")
-	public ResponseEntity<?> createReserve(@RequestBody ReservaDto reservaDto) {
-		// Obtener el nombre de usuario del token
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    String nombreUsuario = authentication.getName();
-	    Usuario usuario = usuarioService.findByNombreUsuario(nombreUsuario)
-	            .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
-	    // Obtener el servicio a partir del ID proporcionado, si existe
-	    Servicio servicio = null;
-	    if (reservaDto.getIdServicio() != null) {
-	        Long idServicio = reservaDto.getIdServicio().longValue();
-	        servicio = servicioService.findById(idServicio)
-	                .orElseThrow(() -> new IllegalArgumentException("El servicio especificado no existe"));
+	@Autowired
+	private TicketService ticketService; // Asegúrate de inyectar el servicio TicketService
+
+	@PostMapping("/CreateReservationAdmin")
+	public ResponseEntity<?> create(@RequestBody @Valid ReservaDto reservacionDto, BindingResult bindingResult) {
+	    if (bindingResult.hasErrors()) {
+	        StringBuilder errorMessage = new StringBuilder();
+	        bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
+	        return ResponseEntity.badRequest().body(new Mensaje(errorMessage.toString()));
 	    }
-		// Obtener el usuario cliente a partir del nombre de usuario
-		Usuario usuarioCliente = usuarioService.findByNombreUsuario(nombreUsuario)
-				.orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
 
-		// Obtener el usuario empleado a partir del nombre de usuario
-		Usuario usuarioEmpleado = usuarioService.findByNombreUsuario(nombreUsuario)
-				.orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
+	    // Obtener el servicio a partir del ID proporcionado en el DTO
+	    Optional<Servicio> servicioOptional = servicioService.findById(reservacionDto.getIdServicio());
+	    if (!servicioOptional.isPresent()) {
+	        return ResponseEntity.badRequest().body(new Mensaje("El servicio especificado no existe"));
+	    }
 
-        // Calcular la hora de fin de la reservación
-        LocalTime horaInicio = reservaDto.getHoraInicio();
-        int duracionEnMinutos = servicio.getDuracion(); // Obtener la duración del servicio en minutos
-        Duration duracion = Duration.ofMinutes(duracionEnMinutos); // Convertir la duración a Duration
-        LocalTime horaFin = horaInicio.plus(duracion);
+	    // Obtener el usuario cliente a partir del ID proporcionado en el DTO
+	    Optional<Usuario> clienteOptional = usuarioService.findById(reservacionDto.getIdCliente());
+	    if (!clienteOptional.isPresent()) {
+	        return ResponseEntity.badRequest().body(new Mensaje("El cliente especificado no existe"));
+	    }
 
-		// Verificar si existe alguna reservación en el intervalo de tiempo deseado
-		if (reservaService.existeReservaEnIntervalo(horaInicio, horaFin)) {
-			return ResponseEntity.badRequest().body(new Mensaje("Ya existe una reservación en este horario"));
-		}
+	    // Obtener el usuario empleado a partir del ID proporcionado en el DTO
+	    Optional<Usuario> empleadoOptional = usuarioService.findById(reservacionDto.getIdEmpleado());
+	    if (!empleadoOptional.isPresent()) {
+	        return ResponseEntity.badRequest().body(new Mensaje("El empleado especificado no existe"));
+	    }
 
-		// Crear la reservación
-		Reserva reserva = new Reserva(reservaDto.getFecha(), horaInicio, horaFin, true, servicio, usuarioCliente, usuarioEmpleado);
+	    Usuario empleado = empleadoOptional.get();
 
-		// Guardar la reservación en la base de datos
-		reservaService.save(reserva);
+	    // Verificar si el usuario tiene el rol de "empleado"
+	    if (!empleado.getRoles().stream().anyMatch(rol -> rol.getNombre().equals(RolNombre.ROLE_EMPLEADO))) {
+	        return ResponseEntity.badRequest().body(new Mensaje("El usuario especificado no tiene el rol de empleado"));
+	    }
 
-		// Devolver una respuesta exitosa
-		return ResponseEntity.ok(new Mensaje("Reservación creada exitosamente"));
+	    // Calcular la hora de fin de la reservación
+	    LocalTime horaInicio = reservacionDto.getHoraInicio();
+	    int duracionEnMinutos = servicioOptional.get().getDuracion(); // Obtener la duración del servicio en minutos
+	    LocalTime horaFin = horaInicio.plusMinutes(duracionEnMinutos);
+
+	    // Verificar si existe alguna reservación en el intervalo de tiempo deseado para el día especificado
+	    boolean reservaEnIntervaloParaDia = reservaService.existeReservaEnIntervaloParaDia(horaInicio, horaFin, reservacionDto.getFecha());
+
+	    // Verificar si existe alguna reservación en la misma hora pero en otro día
+	    boolean reservaEnMismaHoraOtroDia = reservaService.existeReservaEnMismaHoraOtroDia(horaInicio, horaFin, reservacionDto.getFecha());
+
+	    // Combinar ambas validaciones
+	    if (reservaEnIntervaloParaDia || reservaEnMismaHoraOtroDia) {
+	        return ResponseEntity.badRequest().body(new Mensaje("Ya existe una reservación en este horario"));
+	    }
+
+	    // Crear la reservación
+	    Reserva reservacion = new Reserva(
+	            reservacionDto.getFecha(),
+	            horaInicio,
+	            horaFin,
+	            servicioOptional.get(),
+	            clienteOptional.get(),
+	            empleadoOptional.get() 
+	    );
+
+	    // Guardar la reservación en la base de datos
+	    reservacion = reservaService.save(reservacion);
+
+	    // Crear e insertar el ticket
+	    Ticket ticket = new Ticket();
+	    ticket.setFechaHoraExpedicion(LocalDateTime.now()); 
+	    ticket.setReserva(reservacion);
+
+	    try {
+	        ticketService.save(ticket);
+	    } catch (Exception e) {
+	        e.printStackTrace(); // Imprimir la pila de llamadas de la excepción
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Mensaje("Error al guardar el ticket"));
+	    }
+
+	    // Crear un objeto que contenga los nombres correspondientes a cada ID
+	    Map<String, Object> respuesta = new HashMap<>();
+	    respuesta.put("idReservacion", reservacion.getIdReserva());
+	    respuesta.put("fechaReserva", reservacion.getFecha());
+	    respuesta.put("horaInicio", reservacion.getHoraInicio());
+	    respuesta.put("horaFin", reservacion.getHoraFin());
+	    respuesta.put("nombreServicio", reservacion.getServicio().getNombre());
+	    respuesta.put("Cliente", reservacion.getCliente().getNombre());
+	    respuesta.put("Empleado", empleado); // Añade el objeto Usuario del empleado a la respuesta
+
+
+	    // Devolver la respuesta con los nombres correspondientes a cada ID
+	    return ResponseEntity.ok(respuesta);
 	}
 
-	// Agrega una reservación como administrador
-	@PreAuthorize("hasRole('ADMIN')")
-	@PostMapping("/createReserveAsAdmin")
-	public ResponseEntity<?> createReserveAsAdmin(@RequestBody @Valid ReservaDto reservaDto,
-			BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			StringBuilder errorMessage = new StringBuilder();
-			bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
-			return ResponseEntity.badRequest().body(new Mensaje(errorMessage.toString()));
-		}
 
-		// Obtener el servicio a partir del ID proporcionado
-		Optional<Servicio> servicioOptional = servicioService.findById(reservaDto.getServicio().getIdServicio());
-		if (!servicioOptional.isPresent()) {
-			return ResponseEntity.badRequest().body(new Mensaje("El servicio especificado no existe"));
-		}
-
-		// Obtener el usuario cliente a partir del ID proporcionado
-		Optional<Usuario> usuarioClienteOptional = usuarioService.findById(reservaDto.getCliente().getIdUsuario());
-		if (!usuarioClienteOptional.isPresent()) {
-			return ResponseEntity.badRequest().body(new Mensaje("El usuario especificado no existe"));
-		}
-
-		// Obtener el usuario empleado a partir del ID proporcionado
-		Optional<Usuario> usuarioEmpleadoOptional = usuarioService.findById(reservaDto.getEmpleado().getIdUsuario());
-		if (!usuarioEmpleadoOptional.isPresent()) {
-			return ResponseEntity.badRequest().body(new Mensaje("El usuario especificado no existe"));
-		}
-
-		// Calcular la hora de fin de la reservación
-		LocalTime horaInicio = reservaDto.getHoraInicio();
-		Duration duracion = servicioOptional.get().getDuracion(); // Obtener la duración del servicio
-		long duracionEnMinutos = duracion.toMinutes(); // Convertir la duración a minutos
-		LocalTime horaFin = horaInicio.plusMinutes(duracionEnMinutos);
-
-		// Verificar si existe alguna reservación en el intervalo de tiempo deseado para
-		// el día especificado
-		boolean reservaEnIntervaloParaDia = reservaService.existeReservaEnIntervaloParaDia(horaInicio, horaFin,
-				reservaDto.getFecha());
-
-		// Verificar si existe alguna reservación en la misma hora pero en otro día
-		boolean reservaEnMismaHoraOtroDia = reservaService.existeReservaEnMismaHoraOtroDia(horaInicio, horaFin,
-				reservaDto.getFecha());
-
-		// Combinar ambas validaciones
-		if (reservaEnIntervaloParaDia || reservaEnMismaHoraOtroDia) {
-			return ResponseEntity.badRequest().body(new Mensaje("Ya existe una reservación en este horario"));
-		}
-
-		// Crear la reservación
-		Reserva reservacion = new Reserva();
-
-		// Guardar la reservación en la base de datos
-		reservaService.save(reservacion);
-
-		// Crear un objeto que contenga los nombres correspondientes a cada ID
-		Map<String, Object> respuesta = new HashMap<>();
-		respuesta.put("idReserva", reservacion.getIdReserva());
-		respuesta.put("fecha", reservacion.getFecha());
-		respuesta.put("horaInicio", reservacion.getHoraInicio());
-		respuesta.put("horaFin", reservacion.getHoraFin());
-		respuesta.put("nombreServicio", reservacion.getServicio().getNombre());
-		respuesta.put("nombreCliente", reservacion.getCliente().getNombre());
-		respuesta.put("nombreEmpleado", reservacion.getEmpleado().getNombre());
-
-		// Devolver la respuesta con los nombres correspondientes a cada ID
-		return ResponseEntity.ok(respuesta);
-	}
-
-	// Obtiene todas las reservaciones
-	@GetMapping("/getAllReservations")
-	public ResponseEntity<List<Reserva>> getAllReservations() {
-		List<Reserva> listaReservas = reservaService.findAll();
-		return new ResponseEntity<>(listaReservas, HttpStatus.OK);
-	}
-
-	// Obtiene una reservación específica por su ID
-	@GetMapping("/getReserveById/{idReserva}")
-	public ResponseEntity<Object> getReserveById(@PathVariable("idReserva") Long idReserva) {
-		Optional<Reserva> reservaOptional = reservaService.findById(idReserva);
-		if (!reservaOptional.isPresent())
-			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
-		Reserva reserva = reservaOptional.get();
-		return new ResponseEntity<>(reserva, HttpStatus.OK);
-	}
-
-	// Actualiza una reservación como administrador
-	@PreAuthorize("hasRole('ADMIN')")
-	@PutMapping("/updateReserve/{idReserva}")
-	public ResponseEntity<?> updateReserve(@PathVariable("idReserva") Long idReserva,
-			@RequestBody @Valid ReservaDto reservaDto, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
-			StringBuilder errorMessage = new StringBuilder();
-			bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
-			return ResponseEntity.badRequest().body(new Mensaje(errorMessage.toString()));
-		}
-
-		Optional<Reserva> reservaOptional = reservaService.findById(idReserva);
-		if (!reservaOptional.isPresent()) {
-			return ResponseEntity.badRequest().body(new Mensaje("La reservación no existe"));
-		}
-
-		// Obtener el servicio a partir del ID proporcionado
-		Optional<Servicio> servicioOptional = servicioService.findById(reservaDto.getServicio().getIdServicio());
-		if (!servicioOptional.isPresent()) {
-			return ResponseEntity.badRequest().body(new Mensaje("El servicio especificado no existe"));
-		}
-
-		// Obtener el usuario cliente a partir del ID proporcionado
-		Optional<Usuario> usuarioClienteOptional = usuarioService.findById(reservaDto.getCliente().getIdUsuario());
-		if (!usuarioClienteOptional.isPresent()) {
-			return ResponseEntity.badRequest().body(new Mensaje("El usuario especificado no existe"));
-		}
-
-		// Obtener el usuario empleado a partir del ID proporcionado
-		Optional<Usuario> usuarioEmpleadoOptional = usuarioService.findById(reservaDto.getEmpleado().getIdUsuario());
-		if (!usuarioEmpleadoOptional.isPresent()) {
-			return ResponseEntity.badRequest().body(new Mensaje("El usuario especificado no existe"));
-		}
-
-		// Calcular la hora de fin de la reservación
-		LocalTime horaInicio = reservaDto.getHoraInicio();
-		Duration duracion = servicioOptional.get().getDuracion(); // Obtener la duración del servicio
-		long duracionEnMinutos = duracion.toMinutes(); // Convertir la duración a minutos
-		LocalTime horaFin = horaInicio.plusMinutes(duracionEnMinutos);
-
-		// Verificar si existe alguna otra reservación en el intervalo de tiempo deseado
-		if (reservaService.existeReservaEnIntervalo(horaInicio, horaFin)) {
-			return ResponseEntity.badRequest().body(new Mensaje("Ya existe otra reservación en este horario"));
-		}
-
-		// Actualizar la reservación existente con los nuevos datos
-		Reserva reserva = reservaOptional.get();
-		reserva.setFecha(reservaDto.getFecha());
-		reserva.setHoraInicio(horaInicio);
-		reserva.setHoraFin(horaFin);
-		reserva.setServicio(servicioOptional.get());
-		reserva.setCliente(usuarioClienteOptional.get());
-		reserva.setEmpleado(usuarioEmpleadoOptional.get());
-
-		// Guardar la reservación actualizada en la base de datos
-		reservaService.save(reserva);
-		return ResponseEntity.ok(new Mensaje("Reservación actualizada exitosamente"));
-	}
-
-	// Endpoint para eliminar una reserva
-	@PreAuthorize("hasRole('ADMIN')")
-	@DeleteMapping("/deleteReserve/{idReserva}")
-	public ResponseEntity<Object> deleteReserve(@PathVariable("idReserva") Long idReserva) {
-		if (!reservaService.existsById(idReserva))
-			return new ResponseEntity<>(new Mensaje("No existe"), HttpStatus.NOT_FOUND);
-		reservaService.deleteById(idReserva);
-		return new ResponseEntity<>(new Mensaje("Reservación eliminada"), HttpStatus.OK);
-	}
+//	@PreAuthorize("hasRole('ADMIN')")
+//	@PostMapping("/CreateReservationAdmin")
+//	public ResponseEntity<?> create(@RequestBody @Valid ReservaDto reservacionDto, BindingResult bindingResult) {
+//	    if (bindingResult.hasErrors()) {
+//	        StringBuilder errorMessage = new StringBuilder();
+//	        bindingResult.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(". "));
+//	        return ResponseEntity.badRequest().body(new Mensaje(errorMessage.toString()));
+//	    }
+//
+//	    // Obtener el servicio a partir del ID proporcionado en el DTO
+//	    Optional<Servicio> servicioOptional = servicioService.findById(reservacionDto.getIdServicio());
+//	    if (!servicioOptional.isPresent()) {
+//	        return ResponseEntity.badRequest().body(new Mensaje("El servicio especificado no existe"));
+//	    }
+//
+//	    // Obtener el usuario cliente a partir del ID proporcionado en el DTO
+//	    Optional<Usuario> clienteOptional = usuarioService.findById(reservacionDto.getIdCliente());
+//	    if (!clienteOptional.isPresent()) {
+//	        return ResponseEntity.badRequest().body(new Mensaje("El cliente especificado no existe"));
+//	    }
+//
+//	 // Obtener el usuario empleado a partir del ID proporcionado en el DTO
+//	    Optional<Usuario> empleadoOptional = usuarioService.findById(reservacionDto.getIdEmpleado());
+//	    if (!empleadoOptional.isPresent()) {
+//	        return ResponseEntity.badRequest().body(new Mensaje("El empleado especificado no existe"));
+//	    }
+//
+//	    Usuario empleado = empleadoOptional.get();
+//
+//	    // Verificar si el usuario tiene el rol de "empleado"
+//	    if (!empleado.getRoles().stream().anyMatch(rol -> rol.getNombre().equals(RolNombre.ROLE_EMPLEADO))) {
+//	        return ResponseEntity.badRequest().body(new Mensaje("El usuario especificado no tiene el rol de empleado"));
+//	    }
+//
+//	    // Calcular la hora de fin de la reservación
+//	    LocalTime horaInicio = reservacionDto.getHoraInicio();
+//	    int duracionEnMinutos = servicioOptional.get().getDuracion(); // Obtener la duración del servicio en minutos
+//	    LocalTime horaFin = horaInicio.plusMinutes(duracionEnMinutos);
+//
+//	    // Verificar si existe alguna reservación en el intervalo de tiempo deseado para el día especificado
+//	    boolean reservaEnIntervaloParaDia = reservaService.existeReservaEnIntervaloParaDia(horaInicio, horaFin, reservacionDto.getFecha());
+//
+//	    // Verificar si existe alguna reservación en la misma hora pero en otro día
+//	    boolean reservaEnMismaHoraOtroDia = reservaService.existeReservaEnMismaHoraOtroDia(horaInicio, horaFin, reservacionDto.getFecha());
+//
+//	    // Combinar ambas validaciones
+//	    if (reservaEnIntervaloParaDia || reservaEnMismaHoraOtroDia) {
+//	        return ResponseEntity.badRequest().body(new Mensaje("Ya existe una reservación en este horario"));
+//	    }
+//
+//	    // Crear la reservación
+//	    Reserva reservacion = new Reserva(
+//	            reservacionDto.getFecha(),
+//	            horaInicio,
+//	            horaFin,
+//	            servicioOptional.get(),
+//	            clienteOptional.get(),
+//	            empleadoOptional.get() 
+//	    );
+//
+//	    // Guardar la reservación en la base de datos
+//	    reservacion = reservaService.save(reservacion);
+//
+//	    // Crear un objeto que contenga los nombres correspondientes a cada ID
+//	    Map<String, Object> respuesta = new HashMap<>();
+//	    respuesta.put("idReservacion", reservacion.getIdReserva());
+//	    respuesta.put("fechaReserva", reservacion.getFecha());
+//	    respuesta.put("horaInicio", reservacion.getHoraInicio());
+//	    respuesta.put("horaFin", reservacion.getHoraFin());
+//	    respuesta.put("nombreServicio", reservacion.getServicio().getNombre());
+//	    respuesta.put("Cliente", reservacion.getCliente().getNombre());
+//
+//	    // Devolver la respuesta con los nombres correspondientes a cada ID
+//	    return ResponseEntity.ok(respuesta);
+//	}
 }

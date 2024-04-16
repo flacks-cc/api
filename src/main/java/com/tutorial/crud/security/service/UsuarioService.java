@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tutorial.crud.security.entity.Usuario;
+import com.tutorial.crud.security.enums.RolNombre;
 import com.tutorial.crud.security.repository.UsuariosRepository;
 
 @Service
@@ -33,6 +34,10 @@ public class UsuarioService {
 	public boolean existsByNombreUsuario(String nombreUsuario) {
 		return usuariosRepository.existsByNombreUsuario(nombreUsuario);
 	}
+	
+	   public long countByRolNombre(RolNombre rolNombre) {
+	        return usuariosRepository.countByRolesNombre(rolNombre);
+	    }
 
 	public boolean existsByEmail(String email) {
 		return usuariosRepository.existsByEmail(email);

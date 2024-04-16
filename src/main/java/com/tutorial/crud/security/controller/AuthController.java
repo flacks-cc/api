@@ -4,10 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.validation.Valid;
-
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +14,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
@@ -30,7 +26,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.tutorial.crud.dto.Mensaje;
 import com.tutorial.crud.security.dto.JwtDto;
 import com.tutorial.crud.security.dto.LoginUsuario;
@@ -64,45 +59,73 @@ public class AuthController {
 	@Autowired
 	JwtProvider jwtProvider;
 
-	@PostMapping("/nuevo")
-	public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
-	    try {
-	        if (bindingResult.hasErrors())
-	            throw new IllegalArgumentException("Campos incorrectos o email invalido");
+	// Endpoint para crear un usuario
+	@PostMapping("/createUser")
+	public ResponseEntity<?> createUser(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
+		try {
+			if (bindingResult.hasErrors())
+				throw new IllegalArgumentException("Campos incorrectos o email invalido");
 
-	        if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
-	            throw new IllegalArgumentException("Este usuario ya existe");
+			if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
+				throw new IllegalArgumentException("Este usuario ya existe");
 
-	        if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-	            throw new IllegalArgumentException("Este email ya existe");
+			if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
+				throw new IllegalArgumentException("Este email ya existe");
 
-	        if (usuarioService.existsByTelefono(nuevoUsuario.getTelefono()))
-	            throw new IllegalArgumentException("Este teléfono ya existe");
+			if (usuarioService.existsByTelefono(nuevoUsuario.getTelefono()))
+				throw new IllegalArgumentException("Este teléfono ya existe");
 
-	        Usuario usuario = new Usuario(nuevoUsuario.getNombre(), nuevoUsuario.getApellidoPaterno(),
-	                nuevoUsuario.getApellidoMaterno(), nuevoUsuario.getTelefono(), nuevoUsuario.getNombreUsuario(),
-	                nuevoUsuario.getEmail(), passwordEncoder.encode(nuevoUsuario.getPassword()));
+			Usuario usuario = new Usuario(nuevoUsuario.getNombre(), nuevoUsuario.getApellidoPaterno(),
+					nuevoUsuario.getApellidoMaterno(), nuevoUsuario.getTelefono(), nuevoUsuario.getNombreUsuario(),
+					nuevoUsuario.getEmail(), passwordEncoder.encode(nuevoUsuario.getPassword()));
 
-	        Set<Rol> roles = new HashSet<>();
-	        roles.add(rolService.getByNombre(RolNombre.ROLE_USER).orElseThrow(() -> new RuntimeException("No se encontró el rol de usuario")));
+			Set<Rol> roles = new HashSet<>();
+			roles.add(rolService.getByNombre(RolNombre.ROLE_USER)
+					.orElseThrow(() -> new RuntimeException("No se encontró el rol de usuario")));
 
-	        if (nuevoUsuario.getRoles().contains("admin"))
-	            roles.add(rolService.getByNombre(RolNombre.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("No se encontró el rol de administrador")));
-	        
-	        if (nuevoUsuario.getRoles().contains("empleado"))
-	            roles.add(rolService.getByNombre(RolNombre.ROLE_EMPLEADO).orElseThrow(() -> new RuntimeException("No se encontró el rol de empleado")));
+			if (nuevoUsuario.getRoles().contains("admin"))
+				roles.add(rolService.getByNombre(RolNombre.ROLE_ADMIN)
+						.orElseThrow(() -> new RuntimeException("No se encontró el rol de administrador")));
 
-	        usuario.setRoles(roles);
-	        usuarioService.save(usuario);
+			if (nuevoUsuario.getRoles().contains("empleado"))
+				roles.add(rolService.getByNombre(RolNombre.ROLE_EMPLEADO)
+						.orElseThrow(() -> new RuntimeException("No se encontró el rol de empleado")));
 
-	        return new ResponseEntity(new Mensaje("Usuario guardado"), HttpStatus.CREATED);
-	    } catch (IllegalArgumentException e) {
-	        return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
-	    } catch (Exception e) {
-	        return new ResponseEntity(new Mensaje("Ocurrió un error al procesar la solicitud"), HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
+			usuario.setRoles(roles);
+			usuarioService.save(usuario);
+
+			return new ResponseEntity(new Mensaje("Usuario guardado"), HttpStatus.CREATED);
+		} catch (IllegalArgumentException e) {
+			return new ResponseEntity(new Mensaje(e.getMessage()), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			return new ResponseEntity(new Mensaje("Ocurrió un error al procesar la solicitud"),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
+	// Endpoint para listar todos los usuarios
+	@GetMapping("/getAllUsers")
+	public ResponseEntity<List<Usuario>> getAllUsers() {
+		List<Usuario> usuarios = usuarioService.findAll();
+		return new ResponseEntity<>(usuarios, HttpStatus.OK);
+	}
+
+	// Endpoint para obtener un usuario por su ID
+	@GetMapping("/getUserById/{idUsuario}")
+	public ResponseEntity<?> getUserById(@PathVariable("idUsuario") Long idUsuario) {
+		// Verificar si el usuario con el ID proporcionado existe
+		Optional<Usuario> usuarioOptional = usuarioService.findById(idUsuario);
+		if (!usuarioOptional.isPresent()) {
+			return new ResponseEntity<>(new Mensaje("No se encontró un usuario con el ID proporcionado"),
+					HttpStatus.NOT_FOUND);
+		}
+
+		// Devolver el usuario encontrado
+		Usuario usuario = usuarioOptional.get();
+		return new ResponseEntity<>(usuario, HttpStatus.OK);
+	}
+
+	// Endpoint para ingresar con un usuario
 	@PostMapping("/login")
 	public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult) {
 		if (bindingResult.hasErrors())
@@ -128,8 +151,9 @@ public class AuthController {
 		return new ResponseEntity(jwtDto, HttpStatus.OK);
 	}
 
-	@PutMapping("/usuarios/{idUsuario}")
-	public ResponseEntity<?> actualizarUsuario(@PathVariable Long idUsuario,
+	// Endpoint para actualizar un usuario a través de su ID
+	@PutMapping("/updateUser/{idUsuario}")
+	public ResponseEntity<?> updateUser(@PathVariable Long idUsuario,
 			@Valid @RequestBody UsuarioActualizado usuarioActualizado, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
 			return new ResponseEntity<>(new Mensaje("Campos incorrectos o email inválido"), HttpStatus.BAD_REQUEST);
@@ -187,10 +211,10 @@ public class AuthController {
 		return new ResponseEntity<>(new Mensaje("Usuario actualizado"), HttpStatus.OK);
 	}
 
-	// Método para borrar un usuario
+	// Endpoint para borrar un usuario
 	@PreAuthorize("hasRole('ADMIN')")
-	@DeleteMapping("/usuarios/{idUsuario}")
-	public ResponseEntity<?> borrarUsuario(@PathVariable("idUsuario") Long idUsuario) {
+	@DeleteMapping("/deleteUser/{idUsuario}")
+	public ResponseEntity<?> deleteUser(@PathVariable("idUsuario") Long idUsuario) {
 		// Verificar si el usuario con el ID proporcionado existe
 		if (!usuarioService.existsById(idUsuario)) {
 			return new ResponseEntity<>(new Mensaje("No se encontró un usuario con el ID proporcionado"),
@@ -201,27 +225,5 @@ public class AuthController {
 		usuarioService.deleteById(idUsuario);
 
 		return new ResponseEntity<>(new Mensaje("Usuario eliminado correctamente"), HttpStatus.OK);
-	}
-
-	// Método para listar todos los usuarios
-	@GetMapping("/usuarios")
-	public ResponseEntity<List<Usuario>> listarUsuarios() {
-		List<Usuario> usuarios = usuarioService.findAll();
-		return new ResponseEntity<>(usuarios, HttpStatus.OK);
-	}
-
-	// Método para obtener un usuario por su ID
-	@GetMapping("/usuarios/{idUsuario}")
-	public ResponseEntity<?> obtenerUsuarioPorId(@PathVariable("idUsuario") Long idUsuario) {
-		// Verificar si el usuario con el ID proporcionado existe
-		Optional<Usuario> usuarioOptional = usuarioService.findById(idUsuario);
-		if (!usuarioOptional.isPresent()) {
-			return new ResponseEntity<>(new Mensaje("No se encontró un usuario con el ID proporcionado"),
-					HttpStatus.NOT_FOUND);
-		}
-
-		// Devolver el usuario encontrado
-		Usuario usuario = usuarioOptional.get();
-		return new ResponseEntity<>(usuario, HttpStatus.OK);
 	}
 }

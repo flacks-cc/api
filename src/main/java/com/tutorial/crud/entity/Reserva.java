@@ -62,6 +62,15 @@ public class Reserva {
 		this.cliente = cliente;
 		this.empleado = empleado;
 	}
+	
+    public Reserva(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, Servicio servicio, Usuario cliente, Usuario empleado) {
+        this.fecha = fecha;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+        this.servicio = servicio;
+        this.cliente = cliente;
+        this.empleado = empleado;
+    }
 
 	// Getters y setters
 	public Long getIdReserva() {

@@ -1,15 +1,7 @@
 package com.tutorial.crud.entity;
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.validation.constraints.Min;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.tutorial.crud.security.entity.Usuario;
@@ -18,139 +10,147 @@ import com.tutorial.crud.security.entity.Usuario;
 @Table(name = "Tickets")
 public class Ticket {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_ticket")
-	private Long idTicket;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_ticket")
+    private Long idTicket;
 
-	@NotNull(message = "La fecha y hora de expedición no puede ser nula")
-	@Column(name = "fecha_hora_expedicion", nullable = false)
-	private LocalDateTime fechaHoraExpedicion;
+    @Column(name = "fecha_hora_expedicion", nullable = true)
+    private LocalDateTime fechaHoraExpedicion;
 
-	@NotNull(message = "El monto total no puede ser nulo")
-	@Min(value = 1, message = "El monto total debe ser mayor a cero")
-	@Column(name = "monto_total", nullable = false)
-	private double montoTotal;
+    @Column(name = "monto_total", nullable = true)
+    private double montoTotal;
 
-	@Column(name = "fecha_hora_pago")
-	private LocalDateTime fechaHoraPago;
+    @Column(name = "fecha_hora_pago")
+    private LocalDateTime fechaHoraPago;
 
-	@Min(value = 1, message = "El monto pagado debe ser mayor a cero")
-	@Column(name = "monto_pagado")
-	private double montoPagado;
+    @Column(name = "monto_pagado")
+    private double montoPagado;
 
-	@Min(value = 0, message = "El cambio debe ser mayor o igual a cero")
-	@Column(name = "cambio")
-	private double cambio;
+    @Column(name = "cambio")
+    private double cambio;
 
-	@ManyToOne
-	@JoinColumn(name = "id_metodo_pago")
-	private MetodoPago metodoPago;
+    @ManyToOne
+    @JoinColumn(name = "id_metodo_pago")
+    private MetodoPago metodoPago;
 
-	@ManyToOne
-	@NotNull(message = "El id del empleado no puede ser nulo")
-	@JoinColumn(name = "id_empleado", nullable = false)
-	private Usuario empleado;
+    @ManyToOne
+    @JoinColumn(name = "id_empleado", nullable = true)
+    private Usuario empleado;
 
-	@ManyToOne
-	@NotNull(message = "El id de la reserva no puede ser nulo")
-	@JoinColumn(name = "id_reserva", nullable = false)
-	private Reserva reserva;
+    @ManyToOne
+    @JoinColumn(name = "id_reserva", nullable = true)
+    private Reserva reserva;
 
-	// Constructor vacío
-	public Ticket() {
-	}
+    @ManyToOne
+    @JoinColumn(name = "id_detalle_producto", nullable = true)
+    private DetalleProducto detalleProducto;
 
-	// Constructor con todos los atributos
-	public Ticket(LocalDateTime fechaHoraExpedicion, double montoTotal, LocalDateTime fechaHoraPago, double montoPagado,
-			double cambio, MetodoPago metodoPago, Usuario empleado, Reserva reserva) {
-		this.fechaHoraExpedicion = fechaHoraExpedicion;
-		this.montoTotal = montoTotal;
-		this.fechaHoraPago = fechaHoraPago;
-		this.montoPagado = montoPagado;
-		this.cambio = cambio;
-		this.metodoPago = metodoPago;
-		this.empleado = empleado;
-		this.reserva = reserva;
-	}
+    // Constructor vacío
+    public Ticket() {
+    }
 
-	// Getters y setters
-	public Long getIdTicket() {
-		return idTicket;
-	}
+    // Constructor con todos los atributos
+    public Ticket(LocalDateTime fechaHoraExpedicion, double montoTotal, LocalDateTime fechaHoraPago, double montoPagado,
+                  double cambio, MetodoPago metodoPago, Usuario empleado, Reserva reserva, DetalleProducto detalleProducto) {
+        this.fechaHoraExpedicion = fechaHoraExpedicion;
+        this.montoTotal = montoTotal;
+        this.fechaHoraPago = fechaHoraPago;
+        this.montoPagado = montoPagado;
+        this.cambio = cambio;
+        this.metodoPago = metodoPago;
+        this.empleado = empleado;
+        this.reserva = reserva;
+        this.detalleProducto = detalleProducto; 
 
-	public void setIdTicket(Long idTicket) {
-		this.idTicket = idTicket;
-	}
+    }
 
-	public LocalDateTime getFechaHoraExpedicion() {
-		return fechaHoraExpedicion;
-	}
+    // Getters y setters
+    public Long getIdTicket() {
+        return idTicket;
+    }
 
-	public void setFechaHoraExpedicion(LocalDateTime fechaHoraExpedicion) {
-		this.fechaHoraExpedicion = fechaHoraExpedicion;
-	}
+    public void setIdTicket(Long idTicket) {
+        this.idTicket = idTicket;
+    }
 
-	public double getMontoTotal() {
-		return montoTotal;
-	}
+    public LocalDateTime getFechaHoraExpedicion() {
+        return fechaHoraExpedicion;
+    }
 
-	public void setMontoTotal(double montoTotal) {
-		this.montoTotal = montoTotal;
-	}
+    public void setFechaHoraExpedicion(LocalDateTime fechaHoraExpedicion) {
+        this.fechaHoraExpedicion = fechaHoraExpedicion;
+    }
 
-	public LocalDateTime getFechaHoraPago() {
-		return fechaHoraPago;
-	}
+    public double getMontoTotal() {
+        return montoTotal;
+    }
 
-	public void setFechaHoraPago(LocalDateTime fechaHoraPago) {
-		this.fechaHoraPago = fechaHoraPago;
-	}
+    public void setMontoTotal(double montoTotal) {
+        this.montoTotal = montoTotal;
+    }
 
-	public double getMontoPagado() {
-		return montoPagado;
-	}
+    public LocalDateTime getFechaHoraPago() {
+        return fechaHoraPago;
+    }
 
-	public void setMontoPagado(double montoPagado) {
-		this.montoPagado = montoPagado;
-	}
+    public void setFechaHoraPago(LocalDateTime fechaHoraPago) {
+        this.fechaHoraPago = fechaHoraPago;
+    }
 
-	public double getCambio() {
-		return cambio;
-	}
+    public double getMontoPagado() {
+        return montoPagado;
+    }
 
-	public void setCambio(double cambio) {
-		this.cambio = cambio;
-	}
+    public void setMontoPagado(double montoPagado) {
+        this.montoPagado = montoPagado;
+    }
 
-	public MetodoPago getMetodoPago() {
-		return metodoPago;
-	}
+    public double getCambio() {
+        return cambio;
+    }
 
-	public void setMetodoPago(MetodoPago metodoPago) {
-		this.metodoPago = metodoPago;
-	}
+    public void setCambio(double cambio) {
+        this.cambio = cambio;
+    }
 
-	public Usuario getEmpleado() {
-		return empleado;
-	}
+    public MetodoPago getMetodoPago() {
+        return metodoPago;
+    }
 
-	public void setEmpleado(Usuario empleado) {
-		this.empleado = empleado;
-	}
+    public void setMetodoPago(MetodoPago metodoPago) {
+        this.metodoPago = metodoPago;
+    }
 
-	public Reserva getReserva() {
-		return reserva;
-	}
+    public Usuario getEmpleado() {
+        return empleado;
+    }
 
-	public void setReserva(Reserva reserva) {
-		this.reserva = reserva;
-	}
+    public void setEmpleado(Usuario empleado) {
+        this.empleado = empleado;
+    }
 
-	@Override
-	public String toString() {
-		return "Ticket [idTicket=" + idTicket + ", fechaHoraExpedicion=" + fechaHoraExpedicion + ", montoTotal="
-				+ montoTotal + ", fechaHoraPago=" + fechaHoraPago + ", montoPagado=" + montoPagado + ", cambio="
-				+ cambio + ", metodoPago=" + metodoPago + ", empleado=" + empleado + ", reserva=" + reserva + "]";
-	}
+    public Reserva getReserva() {
+        return reserva;
+    }
+
+    public void setReserva(Reserva reserva) {
+        this.reserva = reserva;
+    }
+
+    public DetalleProducto getDetalleProducto() {
+        return detalleProducto;
+    }
+
+    public void setDetalleProducto(DetalleProducto detalleProducto) {
+        this.detalleProducto = detalleProducto;
+    }
+
+    @Override
+    public String toString() {
+        return "Ticket [idTicket=" + idTicket + ", fechaHoraExpedicion=" + fechaHoraExpedicion + ", montoTotal="
+                + montoTotal + ", fechaHoraPago=" + fechaHoraPago + ", montoPagado=" + montoPagado + ", cambio="
+                + cambio + ", metodoPago=" + metodoPago + ", empleado=" + empleado + ", reserva=" + reserva
+                + ", detalleProducto=" + detalleProducto + "]";
+    }
 }

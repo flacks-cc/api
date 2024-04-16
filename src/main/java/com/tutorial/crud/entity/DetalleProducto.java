@@ -15,21 +15,19 @@ public class DetalleProducto {
 
     @NotNull(message = "La cantidad no puede ser nula")
     @Min(value = 1, message = "La cantidad debe ser mayor que cero")
-    @Column(name = "cantidad", nullable = false)
+    @Column(name = "cantidad", nullable = true)
     private int cantidad;
 
     @NotNull(message = "El total no puede ser nulo")
-    @Column(name = "total", nullable = false)
+    @Column(name = "total", nullable = true)
     private double total;
 
     @ManyToOne
-    @NotNull(message = "El id de la reserva no puede ser nulo")
-    @JoinColumn(name = "id_reserva", referencedColumnName = "id_reserva")
+    @JoinColumn(name = "id_reserva", nullable = true, referencedColumnName = "id_reserva")
     private Reserva reserva;
 
     @ManyToOne
-    @NotNull(message = "El id del producto no puede ser nulo")
-    @JoinColumn(name = "id_producto", referencedColumnName = "id_producto")
+    @JoinColumn(name = "id_producto",  nullable = true , referencedColumnName = "id_producto")
     private Producto producto;
 
     // Constructor vacío
