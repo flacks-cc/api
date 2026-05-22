@@ -1,15 +1,20 @@
-<h1 align="center">⚙️ Flack's Cut & Connect — Core REST API</h1>
+# Flack's Cut & Connect — Core REST API
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Spring_Boot-3-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/Java-21-f89820?logo=openjdk&logoColor=white" alt="Java">
+  <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/License-GPL_v3-0298c3?logo=gnu&logoColor=white" alt="GPL v3">
+</p>
 
 <p align="center">
   <em>Core REST API for appointments, products, users, and business logic</em>
 </p>
 
 <p align="center">
-  <a href="https://img.shields.io/badge/Spring_Boot-3-6DB33F?logo=springboot&logoColor=white"><img src="https://img.shields.io/badge/Spring_Boot-3-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot"></a>
-  <a href="https://img.shields.io/badge/Java-21-f89820?logo=openjdk&logoColor=white"><img src="https://img.shields.io/badge/Java-21-f89820?logo=openjdk&logoColor=white" alt="Java"></a>
-  <a href="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white"><img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL"></a>
-  <a href="https://img.shields.io/badge/License-GPL_v3-0298c3?logo=gnu&logoColor=white"><img src="https://img.shields.io/badge/License-GPL_v3-0298c3?logo=gnu&logoColor=white" alt="GPL v3"></a>
-  <a href="https://img.shields.io/badge/Status-Active-2ea44f"><img src="https://img.shields.io/badge/Status-Active-2ea44f" alt="Active"></a>
+  <a href="https://github.com/flacks-cc/api">Repository</a>
+  ·
+  <a href="https://github.com/flacks-cc/api/issues">Report Bug</a>
 </p>
 
 <p align="center">
@@ -18,7 +23,18 @@
 
 ---
 
-## 🚀 Quick Start
+## About Flack's Cut & Connect
+
+Core REST API built with Spring Boot 3 and Java 21 for the Flack's Cut & Connect ecosystem. Handles appointments, products, users, business logic, and serves as the central data layer.
+
+## Features
+
+- Appointment CRUD
+- Product management
+- User authentication (JWT)
+- Business logic layer
+
+## Quick Start
 
 ### Prerequisites
 
@@ -26,7 +42,7 @@
 - Maven
 - PostgreSQL 16+
 
-### Installation
+### Setup
 
 ```bash
 git clone https://github.com/flacks-cc/api.git
@@ -34,44 +50,35 @@ cd api
 ./mvnw spring-boot:run
 ```
 
-## 🧩 Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Framework | Spring Boot 3 |
-| Language | Java 21 |
-| Database | PostgreSQL 16 |
-| Build | Maven |
-| Auth | JWT |
-
-## 📂 Project Structure
+## Architecture
 
 ```
-api/
-├── src/
-│   └── main/
-│       ├── java/
-│       └── resources/
-├── pom.xml
-└── README.md
+(TBD)
 ```
 
-## 🤝 Contributing
+## Contributing
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit conventions, and PR workflow.
 
-## 📄 License
+## License
 
-GPL v3 — see [LICENSE](LICENSE).
+This project is licensed under the GPL v3 — see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 **Authors:**
 
-- [@chrisssp](https://github.com/chrisssp) — Developer
+- Serrano Puertos Jorge Christian
+- Chávez Moreno José Eduardo
+- Fernández López Kevin Noé
+- Florentino Altamirano Misrael
+- Ortiz Pérez Alejandro
+- Moises Torres Bernabé
 
----
+**Advisors:**
 
-<p align="center">
-  <sub>Built with ❤️ by the flacks-cc team · 2026</sub>
-</p>
+- (TBD)
+
+**Academic Support:**
+
+- (TBD)
