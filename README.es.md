@@ -48,12 +48,6 @@ cd api
 ./mvnw spring-boot:run
 ```
 
-## Arquitectura
-
-```
-(Pendiente)
-```
-
 ## Contribuciones
 
 Lee [CONTRIBUTING.md](CONTRIBUTING.md) para conocer las convenciones de ramas, commits y PRs.

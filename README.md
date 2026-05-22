@@ -48,12 +48,6 @@ cd api
 ./mvnw spring-boot:run
 ```
 
-## Architecture
-
-```
-(TBD)
-```
-
 ## Contributing
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit conventions, and PR workflow.
